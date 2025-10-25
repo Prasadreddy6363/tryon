@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AR Live Try-On - VITON-HD</title>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary-color: #6366f1;
+            --primary-hover: #4f46e5;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --bg-dark: #1e293b;
+            --card-bg: #ffffff;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px 15px 0 0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            font-size: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            text-align: center;
+            opacity: 0.9;
+        }
+        
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s;
+            margin-bottom: 10px;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .main-content {
+            background: white;
+            padding: 30px;
+            border-radius: 0 0 15px 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .ar-layout {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 25px;
+        }
+        
+        .video-container {
+            position: relative;
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        
+        #videoElement {
+            width: 100%;
+            height: auto;
+            display: block;
+            transform: scaleX(-1);
+        }
+        
+        #canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transform: scaleX(-1);
+        }
+        
+        .video-overlay {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--danger-color);
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+        
+        .status-indicator.active {
+            background: var(--success-color);
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .control-section {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+        }
+        
+        .control-section h3 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        
+        .cloth-selector {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 5px;
+        }
+        
+        .cloth-selector::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .cloth-selector::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 3px;
+        }
+        
+        .cloth-item {
+            cursor: pointer;
+            border: 3px solid transparent;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .cloth-item img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            display: block;
+        }
+        
+        .cloth-item:hover {
+            transform: translateY(-3px);
+            border-color: var(--success-color);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .cloth-item.selected {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.5);
+        }
+        
+        .cloth-name {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            color: white;
+            padding: 15px 5px 5px;
+            font-size: 10px;
+            text-align: center;
+        }
+        
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .ar-btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .ar-btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            color: white;
+        }
+        
+        .ar-btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        }
+        
+        .ar-btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+        
+        .ar-btn-success:hover:not(:disabled) {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+        
+        .ar-btn-danger {
+            background: var(--danger-color);
+            color: white;
+        }
+        
+        .ar-btn-danger:hover {
+            background: #dc2626;
+        }
+        
+        .ar-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .slider-control {
+            margin-bottom: 15px;
+        }
+        
+        .slider-control label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 13px;
+            color: #475569;
+            font-weight: 500;
+        }
+        
+        .slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #e2e8f0;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            cursor: pointer;
+        }
+        
+        .slider::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            cursor: pointer;
+            border: none;
+        }
+        
+        .value-display {
+            display: inline-block;
+            background: var(--primary-color);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            float: right;
+        }
+        
+        .alert {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 13px;
+        }
+        
+        .alert-info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #93c5fd;
+        }
+        
+        .alert-success {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #86efac;
+        }
+        
+        .alert-warning {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fcd34d;
+        }
+        
+        @media (max-width: 1024px) {
+            .ar-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .cloth-selector {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="/" class="back-btn">← Back to Main</a>
+            <h1>
+                📹 AR Live Virtual Try-On
+                <span style="background: rgba(255,255,255,0.2); padding: 5px 12px; border-radius: 15px; font-size: 14px;">BETA</span>
+            </h1>
+            <p>Real-time clothing try-on using your webcam and AI body tracking</p>
+        </div>
+        
+        <div class="main-content">
+            <div class="alert alert-info">
+                ℹ️ <strong>How to use:</strong>
+                <ol style="margin: 10px 0 0 20px; line-height: 1.6;">
+                    <li>Click "Start Camera" and allow camera access</li>
+                    <li>Stand 3-6 feet from camera with full upper body visible</li>
+                    <li>Select a clothing item from the right panel</li>
+                    <li><strong>NEW:</strong> Click "🎽 Men's Shirt Preset" for optimal alignment</li>
+                    <li>Enable "Show Body Keypoints" to see alignment guides:
+                        <ul style="margin-left: 20px;">
+                            <li><span style="color: #00FF00;">Green box</span> = Your body detection</li>
+                            <li><span style="color: #FF00FF;">Magenta box</span> = Shirt coverage area</li>
+                            <li><span style="color: #FFFF00;">Yellow dot (Nose)</span> = Helps position collar</li>
+                        </ul>
+                    </li>
+                    <li>Fine-tune with sliders if needed</li>
+                    <li>Click "Capture Photo" to save your try-on</li>
+                </ol>
+            </div>
+            
+            <div class="ar-layout">
+                <div class="video-container">
+                    <video id="videoElement" autoplay playsinline></video>
+                    <canvas id="canvas"></canvas>
+                    <div class="video-overlay">
+                        <span class="status-indicator" id="statusIndicator"></span>
+                        <span id="statusText">Initializing...</span>
+                    </div>
+                </div>
+                
+                <div class="controls">
+                    <div class="control-section">
+                        <h3>📷 Camera Controls</h3>
+                        <div class="btn-group">
+                            <button class="ar-btn ar-btn-primary" id="startBtn" onclick="startCamera()">
+                                <span>▶️</span> Start Camera
+                            </button>
+                            <button class="ar-btn ar-btn-danger" id="stopBtn" onclick="stopCamera()" disabled>
+                                <span>⏸️</span> Stop Camera
+                            </button>
+                            <button class="ar-btn ar-btn-success" id="captureBtn" onclick="captureFrame()" disabled>
+                                <span>📸</span> Capture Photo
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="control-section">
+                        <h3>⚙️ Overlay Settings</h3>
+                        
+                        <div class="btn-group" style="margin-bottom: 15px;">
+                            <button class="ar-btn" onclick="applyShirtPreset()" 
+                                    style="background: #10b981; color: white; font-size: 13px; padding: 8px;">
+                                👔 Men's Shirt Preset
+                            </button>
+                        </div>
+                        
+                        <!-- Quick Position Adjustment Buttons -->
+                        <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 2px solid #3b82f6;">
+                            <h4 style="margin: 0 0 10px 0; font-size: 14px; color: #1e40af;">⬆️⬇️ Quick Adjust Position</h4>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                                <button class="ar-btn" onclick="moveClothingUp()" 
+                                        style="background: #3b82f6; color: white; font-size: 13px; padding: 10px;">
+                                    ⬆️ Move Up
+                                </button>
+                                <button class="ar-btn" onclick="moveClothingDown()" 
+                                        style="background: #3b82f6; color: white; font-size: 13px; padding: 10px;">
+                                    ⬇️ Move Down
+                                </button>
+                                <button class="ar-btn" onclick="moveClothingLeft()" 
+                                        style="background: #6366f1; color: white; font-size: 13px; padding: 10px;">
+                                    ⬅️ Move Left
+                                </button>
+                                <button class="ar-btn" onclick="moveClothingRight()" 
+                                        style="background: #6366f1; color: white; font-size: 13px; padding: 10px;">
+                                    ➡️ Move Right
+                                </button>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px;">
+                                <button class="ar-btn" onclick="makeClothingLarger()" 
+                                        style="background: #10b981; color: white; font-size: 13px; padding: 10px;">
+                                    🔼 Larger
+                                </button>
+                                <button class="ar-btn" onclick="makeClothingSmaller()" 
+                                        style="background: #f59e0b; color: white; font-size: 13px; padding: 10px;">
+                                    🔽 Smaller
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="slider-control">
+                            <label for="opacitySlider">
+                                Opacity
+                                <span class="value-display" id="opacityValue">60%</span>
+                            </label>
+                            <input type="range" class="slider" id="opacitySlider" 
+                                   min="0" max="100" value="60" 
+                                   oninput="updateOpacity(this.value)">
+                        </div>
+                        
+                        <div class="slider-control">
+                            <label for="scaleSlider">
+                                Scale
+                                <span class="value-display" id="scaleValue">100%</span>
+                            </label>
+                            <input type="range" class="slider" id="scaleSlider" 
+                                   min="80" max="150" value="100" 
+                                   oninput="updateScale(this.value)">
+                        </div>
+                        
+                        <div class="slider-control">
+                            <label for="verticalSlider">
+                                Vertical Position
+                                <span class="value-display" id="verticalValue">0</span>
+                            </label>
+                            <input type="range" class="slider" id="verticalSlider" 
+                                   min="-50" max="50" value="0" 
+                                   oninput="updateVertical(this.value)">
+                        </div>
+                        
+                        <div class="slider-control">
+                            <label for="horizontalSlider">
+                                Horizontal Position
+                                <span class="value-display" id="horizontalValue">0</span>
+                            </label>
+                            <input type="range" class="slider" id="horizontalSlider" 
+                                   min="-50" max="50" value="0" 
+                                   oninput="updateHorizontal(this.value)">
+                        </div>
+                        
+                        <label for="showKeypoints" style="display: flex; align-items: center; gap: 8px; margin-top: 10px;">
+                            <input type="checkbox" id="showKeypoints" onchange="toggleKeypoints()" checked>
+                            Show Body Keypoints
+                        </label>
+                        
+                        <button class="ar-btn ar-btn-primary" onclick="resetSettings()" style="margin-top: 15px;">
+                            <span>🔄</span> Reset Settings
+                        </button>
+                    </div>
+                    
+                    <div class="control-section">
+                        <h3>👕 Select Clothing</h3>
+                        <div class="cloth-selector" id="clothSelector">
+                            {% for c in clothes %}
+                            <div class="cloth-item" data-cloth="{{ c }}" onclick="selectCloth('{{ c }}', this)">
+                                <img src="{{ url_for('preview_cloth', filename=c) }}" alt="{{ c }}">
+                                <div class="cloth-name">{{ c }}</div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let video, canvas, ctx;
+        let pose, camera;
+        let selectedCloth = null;
+        let isRunning = false;
+        let currentKeypoints = null;
+        let settings = {
+            opacity: 0.6,
+            scale: 1.0,
+            showKeypoints: true,
+            verticalOffset: 0,
+            horizontalOffset: 0
+        };
+
+        // Initialize on page load
+        window.onload = function() {
+            video = document.getElementById('videoElement');
+            canvas = document.getElementById('canvas');
+            ctx = canvas.getContext('2d');
+            
+            // Initialize MediaPipe Pose
+            pose = new Pose({
+                locateFile: (file) => {
+                    return `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
+                }
+            });
+            
+            pose.setOptions({
+                modelComplexity: 1,
+                smoothLandmarks: true,
+                enableSegmentation: false,
+                smoothSegmentation: false,
+                minDetectionConfidence: 0.5,
+                minTrackingConfidence: 0.5
+            });
+            
+            pose.onResults(onPoseResults);
+        };
+
+        async function startCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    }
+                });
+                
+                video.srcObject = stream;
+                video.onloadedmetadata = () => {
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                };
+                
+                isRunning = true;
+                updateStatus('Camera Active', true);
+                
+                document.getElementById('startBtn').disabled = true;
+                document.getElementById('stopBtn').disabled = false;
+                document.getElementById('captureBtn').disabled = false;
+                
+                // Start pose detection loop
+                detectPose();
+                
+            } catch (error) {
+                console.error('Camera error:', error);
+                alert('Failed to access camera. Please check permissions.');
+            }
+        }
+
+        function stopCamera() {
+            if (video.srcObject) {
+                video.srcObject.getTracks().forEach(track => track.stop());
+                video.srcObject = null;
+            }
+            
+            isRunning = false;
+            updateStatus('Camera Stopped', false);
+            
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('stopBtn').disabled = true;
+            document.getElementById('captureBtn').disabled = true;
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        async function detectPose() {
+            if (!isRunning) return;
+            
+            await pose.send({ image: video });
+            requestAnimationFrame(detectPose);
+        }
+
+        function onPoseResults(results) {
+            if (!isRunning) return;
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Save landmarks
+            currentKeypoints = results.poseLandmarks;
+            
+            if (currentKeypoints && selectedCloth) {
+                // Draw cloth overlay
+                drawClothOverlay(currentKeypoints);
+            }
+            
+            // Draw skeleton if enabled
+            if (settings.showKeypoints && currentKeypoints) {
+                drawSkeleton(currentKeypoints);
+            }
+        }
+
+        // Cache for loaded cloth images
+        const clothImageCache = {};
+
+        function drawClothOverlay(landmarks) {
+            if (!selectedCloth) {
+                console.log('No cloth selected');
+                return;
+            }
+            
+            // Get key body landmarks
+            const nose = landmarks[0];           // For head reference
+            const leftShoulder = landmarks[11];
+            const rightShoulder = landmarks[12];
+            const leftHip = landmarks[23];
+            const rightHip = landmarks[24];
+            
+            // Check visibility of critical points
+            if (!leftShoulder || !rightShoulder || !leftHip || !rightHip) {
+                console.log('Missing landmarks');
+                return;
+            }
+            if (leftShoulder.visibility < 0.5 || rightShoulder.visibility < 0.5 ||
+                leftHip.visibility < 0.5 || rightHip.visibility < 0.5) {
+                console.log('Low visibility landmarks');
+                return;
+            }
+            
+            // Convert to pixel coordinates
+            const leftShoulderX = leftShoulder.x * canvas.width;
+            const leftShoulderY = leftShoulder.y * canvas.height;
+            const rightShoulderX = rightShoulder.x * canvas.width;
+            const rightShoulderY = rightShoulder.y * canvas.height;
+            const leftHipX = leftHip.x * canvas.width;
+            const leftHipY = leftHip.y * canvas.height;
+            const rightHipX = rightHip.x * canvas.width;
+            const rightHipY = rightHip.y * canvas.height;
+            
+            // Calculate centers
+            const shoulderCenterX = (leftShoulderX + rightShoulderX) / 2;
+            const shoulderCenterY = (leftShoulderY + rightShoulderY) / 2;
+            const hipCenterX = (leftHipX + rightHipX) / 2;
+            const hipCenterY = (leftHipY + rightHipY) / 2;
+            
+            // SIMPLIFIED: Calculate shirt dimensions
+            // Width: shoulder span + extra for sleeves
+            const shoulderSpan = Math.abs(rightShoulderX - leftShoulderX);
+            const shirtWidth = shoulderSpan * 2.0 * settings.scale; // 2.0x for full coverage including sleeves
+            
+            // Height: from above shoulders to below hips
+            const bodyHeight = hipCenterY - shoulderCenterY;
+            const shirtHeight = bodyHeight * 1.8 * settings.scale; // 1.8x for full torso coverage
+            
+            // CRITICAL FIX: Position shirt TOP ABOVE shoulders (for collar/neck area)
+            // The clothing should START above shoulder center to show collar properly
+            const shirtX = shoulderCenterX - (shirtWidth / 2) + settings.horizontalOffset;
+            const shirtY = shoulderCenterY - (shirtHeight * 0.35) + settings.verticalOffset; // Start 35% above shoulder center
+            
+            // Clamp to canvas boundaries
+            const finalX = Math.max(0, Math.min(shirtX, canvas.width - 10));
+            const finalY = Math.max(0, Math.min(shirtY, canvas.height - 10));
+            const finalWidth = Math.min(shirtWidth, canvas.width - finalX);
+            const finalHeight = Math.min(shirtHeight, canvas.height - finalY);
+            
+            console.log(`Drawing cloth at (${Math.round(finalX)}, ${Math.round(finalY)}), size: ${Math.round(finalWidth)}x${Math.round(finalHeight)}`);
+            
+            // Debug: Draw positioning info
+            if (settings.showKeypoints) {
+                ctx.save();
+                ctx.strokeStyle = '#FFFF00';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(finalX, finalY, finalWidth, finalHeight);
+                ctx.fillStyle = '#FFFF00';
+                ctx.font = 'bold 12px Arial';
+                ctx.fillText(`Cloth: ${Math.round(finalWidth)}x${Math.round(finalHeight)}`, finalX + 5, finalY + 15);
+                ctx.fillText(`Pos: (${Math.round(finalX)}, ${Math.round(finalY)})`, finalX + 5, finalY + 30);
+                if (selectedCloth) {
+                    ctx.fillText(`File: ${selectedCloth}`, finalX + 5, finalY + 45);
+                }
+                ctx.restore();
+            }
+            
+            // Load and draw cloth image
+            if (!clothImageCache[selectedCloth]) {
+                console.log(`Loading new cloth: ${selectedCloth}`);
+                const img = new Image();
+                img.crossOrigin = 'anonymous';
+                img.src = `/preview/cloth/${selectedCloth}`;
+                img.onload = function() {
+                    console.log(`✓ Cloth loaded: ${selectedCloth}`);
+                    clothImageCache[selectedCloth] = img;
+                    drawClothImage(img, finalX, finalY, finalWidth, finalHeight);
+                };
+                img.onerror = function() {
+                    console.error(`✗ Failed to load: ${selectedCloth}`);
+                };
+            } else {
+                console.log(`Using cached cloth: ${selectedCloth}`);
+                drawClothImage(clothImageCache[selectedCloth], finalX, finalY, finalWidth, finalHeight);
+            }
+        }
+        
+        function drawClothImage(img, x, y, width, height) {
+            if (!img || !img.complete) {
+                console.error('Image not loaded or invalid');
+                return;
+            }
+            
+            console.log(`Drawing image: ${img.width}x${img.height} to canvas ${width}x${height} at (${x}, ${y})`);
+            
+            // Create temporary canvas for white background removal
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = img.width;
+            tempCanvas.height = img.height;
+            const tempCtx = tempCanvas.getContext('2d');
+            
+            // Draw original image
+            tempCtx.drawImage(img, 0, 0);
+            
+            // Get image data to remove white background
+            const imageData = tempCtx.getImageData(0, 0, img.width, img.height);
+            const data = imageData.data;
+            
+            // Remove white/light gray background (make transparent)
+            const threshold = 240; // Brightness threshold for white detection
+            for (let i = 0; i < data.length; i += 4) {
+                const r = data[i];
+                const g = data[i + 1];
+                const b = data[i + 2];
+                
+                // If pixel is white/very light (all RGB > threshold), make transparent
+                if (r > threshold && g > threshold && b > threshold) {
+                    data[i + 3] = 0; // Set alpha to 0 (transparent)
+                }
+            }
+            
+            // Put modified image data back
+            tempCtx.putImageData(imageData, 0, 0);
+            
+            // Now draw the processed image (without white background) onto main canvas
+            ctx.save();
+            
+            // Apply transparency setting
+            ctx.globalAlpha = settings.opacity;
+            
+            // Use better image smoothing
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+            
+            try {
+                // Draw the clothing without white background
+                ctx.drawImage(tempCanvas, 0, 0, img.width, img.height, x, y, width, height);
+                console.log('✓ Image drawn successfully (white background removed)');
+            } catch (error) {
+                console.error('Error drawing image:', error);
+            }
+            
+            // Reset context
+            ctx.globalAlpha = 1.0;
+            ctx.restore();
+        }
+
+        function drawSkeleton(landmarks) {
+            // Draw torso rectangle for alignment reference
+            const leftShoulder = landmarks[11];
+            const rightShoulder = landmarks[12];
+            const leftHip = landmarks[23];
+            const rightHip = landmarks[24];
+            const nose = landmarks[0];
+            
+            if (leftShoulder.visibility > 0.5 && rightShoulder.visibility > 0.5 &&
+                leftHip.visibility > 0.5 && rightHip.visibility > 0.5) {
+                
+                // Draw actual body detection box
+                ctx.strokeStyle = '#00FF00';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([5, 5]);
+                
+                const box = [
+                    [leftShoulder.x * canvas.width, leftShoulder.y * canvas.height],
+                    [rightShoulder.x * canvas.width, rightShoulder.y * canvas.height],
+                    [rightHip.x * canvas.width, rightHip.y * canvas.height],
+                    [leftHip.x * canvas.width, leftHip.y * canvas.height]
+                ];
+                
+                ctx.beginPath();
+                ctx.moveTo(box[0][0], box[0][1]);
+                for (let i = 1; i < box.length; i++) {
+                    ctx.lineTo(box[i][0], box[i][1]);
+                }
+                ctx.closePath();
+                ctx.stroke();
+                
+                // Draw extended shirt coverage area
+                const shoulderCenterX = (leftShoulder.x + rightShoulder.x) / 2 * canvas.width;
+                const shoulderCenterY = (leftShoulder.y + rightShoulder.y) / 2 * canvas.height;
+                const hipCenterY = (leftHip.y + rightHip.y) / 2 * canvas.height; // FIXED: Calculate hipCenterY
+                const rawShoulderWidth = Math.sqrt(
+                    Math.pow((rightShoulder.x - leftShoulder.x) * canvas.width, 2) + 
+                    Math.pow((rightShoulder.y - leftShoulder.y) * canvas.height, 2)
+                );
+                const shirtWidth = rawShoulderWidth * 1.8;
+                
+                // Draw shirt coverage zone - UPDATED POSITION
+                ctx.strokeStyle = '#FF00FF';
+                ctx.lineWidth = 3;
+                ctx.setLineDash([10, 5]);
+                
+                const torsoHeight = hipCenterY - shoulderCenterY;
+                const shirtHeightGuide = torsoHeight * 1.8;
+                
+                const coverageX = shoulderCenterX - shirtWidth / 2;
+                const coverageY = shoulderCenterY - (shirtHeightGuide * 0.35); // Start well above shoulders
+                ctx.strokeRect(coverageX, coverageY, shirtWidth, shirtHeightGuide);
+                
+                // Add label
+                ctx.fillStyle = '#FF00FF';
+                ctx.font = 'bold 14px Arial';
+                ctx.fillText('Target Shirt Area', coverageX + 5, coverageY + 20);
+                
+                ctx.setLineDash([]);
+            }
+            
+            // Draw connections
+            const connections = [
+                [11, 12], // Shoulders
+                [11, 23], // Left torso
+                [12, 24], // Right torso
+                [23, 24], // Hips
+                [11, 13], // Left arm
+                [12, 14]  // Right arm
+            ];
+            
+            ctx.strokeStyle = '#00FF00';
+            ctx.lineWidth = 3;
+            
+            connections.forEach(([start, end]) => {
+                if (landmarks[start] && landmarks[end] &&
+                    landmarks[start].visibility > 0.5 && landmarks[end].visibility > 0.5) {
+                    ctx.beginPath();
+                    ctx.moveTo(landmarks[start].x * canvas.width, landmarks[start].y * canvas.height);
+                    ctx.lineTo(landmarks[end].x * canvas.width, landmarks[end].y * canvas.height);
+                    ctx.stroke();
+                }
+            });
+            
+            // Draw keypoints with labels
+            const importantPoints = [
+                { idx: 0, label: 'Nose' },
+                { idx: 11, label: 'L.Shoulder' },
+                { idx: 12, label: 'R.Shoulder' },
+                { idx: 23, label: 'L.Hip' },
+                { idx: 24, label: 'R.Hip' }
+            ];
+            
+            importantPoints.forEach(point => {
+                if (landmarks[point.idx] && landmarks[point.idx].visibility > 0.5) {
+                    const x = landmarks[point.idx].x * canvas.width;
+                    const y = landmarks[point.idx].y * canvas.height;
+                    
+                    // Draw point
+                    ctx.fillStyle = point.idx === 0 ? '#FFFF00' : '#00FF00';
+                    ctx.beginPath();
+                    ctx.arc(x, y, 6, 0, 2 * Math.PI);
+                    ctx.fill();
+                    
+                    // Draw label
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.strokeStyle = '#000000';
+                    ctx.lineWidth = 3;
+                    ctx.font = 'bold 12px Arial';
+                    ctx.strokeText(point.label, x + 10, y - 10);
+                    ctx.fillText(point.label, x + 10, y - 10);
+                }
+            });
+        }
+
+        function selectCloth(clothName, element) {
+            // Remove previous selection
+            document.querySelectorAll('.cloth-item').forEach(el => el.classList.remove('selected'));
+            
+            // Select new cloth
+            element.classList.add('selected');
+            selectedCloth = clothName;
+            
+            // Clear cache to force reload
+            delete clothImageCache[clothName];
+            
+            // Pre-load the image
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = function() {
+                clothImageCache[clothName] = img;
+                console.log(`✓ Loaded cloth: ${clothName} (${img.width}x${img.height})`);
+                updateStatus(`Trying: ${clothName}`, true);
+            };
+            img.onerror = function() {
+                console.error(`✗ Failed to load cloth: ${clothName}`);
+                updateStatus(`Error loading: ${clothName}`, false);
+            };
+            img.src = `/preview/cloth/${clothName}`;
+        }
+
+        function updateOpacity(value) {
+            settings.opacity = value / 100;
+            document.getElementById('opacityValue').textContent = value + '%';
+        }
+
+        function updateScale(value) {
+            settings.scale = value / 100;
+            document.getElementById('scaleValue').textContent = value + '%';
+        }
+        
+        function updateVertical(value) {
+            settings.verticalOffset = parseInt(value);
+            document.getElementById('verticalValue').textContent = value;
+        }
+        
+        function updateHorizontal(value) {
+            settings.horizontalOffset = parseInt(value);
+            document.getElementById('horizontalValue').textContent = value;
+        }
+
+        function toggleKeypoints() {
+            settings.showKeypoints = document.getElementById('showKeypoints').checked;
+        }
+        
+        function resetSettings() {
+            settings.opacity = 0.6;
+            settings.scale = 1.0;
+            settings.verticalOffset = 0;
+            settings.horizontalOffset = 0;
+            
+            document.getElementById('opacitySlider').value = 60;
+            document.getElementById('opacityValue').textContent = '60%';
+            document.getElementById('scaleSlider').value = 100;
+            document.getElementById('scaleValue').textContent = '100%';
+            document.getElementById('verticalSlider').value = 0;
+            document.getElementById('verticalValue').textContent = '0';
+            document.getElementById('horizontalSlider').value = 0;
+            document.getElementById('horizontalValue').textContent = '0';
+        }
+        
+        function applyShirtPreset() {
+            // Optimal settings for men's shirt alignment - UPDATED FOR HIGHER POSITION
+            settings.opacity = 0.7;         // Good visibility
+            settings.scale = 0.95;           // Slightly smaller (algorithm already extends)
+            settings.verticalOffset = -30;   // Move UP significantly for shoulder alignment
+            settings.horizontalOffset = 0;   // Centered
+            
+            document.getElementById('opacitySlider').value = 70;
+            document.getElementById('opacityValue').textContent = '70%';
+            document.getElementById('scaleSlider').value = 95;
+            document.getElementById('scaleValue').textContent = '95%';
+            document.getElementById('verticalSlider').value = -30;
+            document.getElementById('verticalValue').textContent = '-30';
+            document.getElementById('horizontalSlider').value = 0;
+            document.getElementById('horizontalValue').textContent = '0';
+            
+            // Show feedback
+            updateStatus('Shirt preset applied - positioned at shoulder level!', true);
+            setTimeout(() => {
+                if (selectedCloth) {
+                    updateStatus(`Trying: ${selectedCloth}`, true);
+                } else {
+                    updateStatus('Camera Active', true);
+                }
+            }, 3000);
+        }
+        
+        // Quick adjustment functions
+        function moveClothingUp() {
+            const currentValue = parseInt(document.getElementById('verticalSlider').value);
+            const newValue = currentValue - 10; // Move up by 10 pixels
+            document.getElementById('verticalSlider').value = Math.max(-50, newValue);
+            updateVertical(document.getElementById('verticalSlider').value);
+            updateStatus('⬆️ Moved clothing up', true);
+        }
+        
+        function moveClothingDown() {
+            const currentValue = parseInt(document.getElementById('verticalSlider').value);
+            const newValue = currentValue + 10; // Move down by 10 pixels
+            document.getElementById('verticalSlider').value = Math.min(50, newValue);
+            updateVertical(document.getElementById('verticalSlider').value);
+            updateStatus('⬇️ Moved clothing down', true);
+        }
+        
+        function moveClothingLeft() {
+            const currentValue = parseInt(document.getElementById('horizontalSlider').value);
+            const newValue = currentValue - 10; // Move left by 10 pixels
+            document.getElementById('horizontalSlider').value = Math.max(-50, newValue);
+            updateHorizontal(document.getElementById('horizontalSlider').value);
+            updateStatus('⬅️ Moved clothing left', true);
+        }
+        
+        function moveClothingRight() {
+            const currentValue = parseInt(document.getElementById('horizontalSlider').value);
+            const newValue = currentValue + 10; // Move right by 10 pixels
+            document.getElementById('horizontalSlider').value = Math.min(50, newValue);
+            updateHorizontal(document.getElementById('horizontalSlider').value);
+            updateStatus('➡️ Moved clothing right', true);
+        }
+        
+        function makeClothingLarger() {
+            const currentValue = parseInt(document.getElementById('scaleSlider').value);
+            const newValue = currentValue + 5; // Increase by 5%
+            document.getElementById('scaleSlider').value = Math.min(150, newValue);
+            updateScale(document.getElementById('scaleSlider').value);
+            updateStatus('🔼 Made clothing larger', true);
+        }
+        
+        function makeClothingSmaller() {
+            const currentValue = parseInt(document.getElementById('scaleSlider').value);
+            const newValue = currentValue - 5; // Decrease by 5%
+            document.getElementById('scaleSlider').value = Math.max(80, newValue);
+            updateScale(document.getElementById('scaleSlider').value);
+            updateStatus('🔽 Made clothing smaller', true);
+        }
+
+        function updateStatus(text, active) {
+            document.getElementById('statusText').textContent = text;
+            const indicator = document.getElementById('statusIndicator');
+            if (active) {
+                indicator.classList.add('active');
+            } else {
+                indicator.classList.remove('active');
+            }
+        }
+
+        async function captureFrame() {
+            // Create a temporary canvas for capture
+            const captureCanvas = document.createElement('canvas');
+            captureCanvas.width = canvas.width;
+            captureCanvas.height = canvas.height;
+            const captureCtx = captureCanvas.getContext('2d');
+            
+            // Draw video frame
+            captureCtx.save();
+            captureCtx.scale(-1, 1);
+            captureCtx.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
+            captureCtx.restore();
+            
+            // Draw overlay
+            captureCtx.drawImage(canvas, 0, 0);
+            
+            // Convert to blob and download
+            captureCanvas.toBlob(async (blob) => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `ar_tryon_${Date.now()}.jpg`;
+                a.click();
+                
+                // Show success message
+                const alertDiv = document.createElement('div');
+                alertDiv.className = 'alert alert-success';
+                alertDiv.textContent = '✅ Photo captured successfully!';
+                document.querySelector('.main-content').insertBefore(
+                    alertDiv,
+                    document.querySelector('.ar-layout')
+                );
+                
+                setTimeout(() => alertDiv.remove(), 3000);
+            }, 'image/jpeg', 0.95);
+        }
+    </script>
+</body>
+</html>

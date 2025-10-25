@@ -1,0 +1,140 @@
+================================================================================
+  🎽 NIKE ATHLETIC SHIRT - QUICK START GUIDE
+================================================================================
+
+Your Nike lime-green/white athletic shirt is ready to be added to VITON-HD!
+
+--------------------------------------------------------------------------------
+  📋 STEP-BY-STEP INSTRUCTIONS
+--------------------------------------------------------------------------------
+
+STEP 1: Save the Nike shirt image from our conversation
+  → Right-click the image and "Save image as..."
+  → Save it somewhere easy to find (e.g., Desktop or Downloads)
+  → Remember the file path!
+
+STEP 2: Run the automated script
+  → Open PowerShell or Command Prompt
+  → Navigate to this folder:
+    cd "C:\Users\Prasad\OneDrive\Desktop\vton github"
+  
+  → Run the script:
+    python add_nike_shirt_direct.py
+  
+  → When prompted, enter the path to your saved image:
+    Example: C:\Users\Prasad\Downloads\nike_shirt.png
+
+STEP 3: Wait for processing
+  → The script will automatically:
+    ✓ Resize the image to 768x1024 pixels
+    ✓ Save as 14680_00.jpg in the cloth directory
+    ✓ Create a mask file
+    ✓ Confirm success!
+
+STEP 4: Restart and refresh
+  → If Flask server is running, stop it (Ctrl+C)
+  → Restart: python web/app.py
+  → Open browser: http://localhost:5000
+  → Hard refresh: Ctrl + Shift + R
+
+STEP 5: Find and use the Nike shirt!
+  → In clothing selection, scroll to the bottom
+  → Look for: 14680_00.jpg
+  → The lime-green/white Nike shirt will be there!
+
+--------------------------------------------------------------------------------
+  🚀 FOR AR TRY-ON
+--------------------------------------------------------------------------------
+
+1. Click "AR Live Try-On" tab in web interface
+2. Click "Start Camera" and allow camera access
+3. Scroll in clothing selector to find Nike shirt (14680_00)
+4. Click the shirt to select it
+5. Use "Men's Shirt Preset" button for best alignment
+6. Fine-tune with quick adjustment buttons:
+   ⬆️ Move Up    ⬇️ Move Down    ⬅️ Move Left    ➡️ Move Right
+   🔼 Larger     🔽 Smaller
+
+--------------------------------------------------------------------------------
+  📁 FILE LOCATIONS
+--------------------------------------------------------------------------------
+
+Scripts created:
+  ✓ add_nike_shirt_direct.py       → Quick automated addition
+  ✓ add_nike_shirt.py              → Generic item addition with prompts
+  ✓ ADD_NIKE_SHIRT_GUIDE.md        → Detailed guide
+  ✓ DATASET_MANAGEMENT.md          → Full dataset documentation
+
+Dataset location after adding:
+  → Cloth: VITON-HD/datasets/test/cloth/14680_00.jpg
+  → Mask:  VITON-HD/datasets/test/cloth-mask/14680_00.jpg
+
+--------------------------------------------------------------------------------
+  ❓ TROUBLESHOOTING
+--------------------------------------------------------------------------------
+
+Problem: "File not found" error when running script
+Solution: Check that you entered the correct path to the image
+         Paths with spaces need quotes: "C:\My Files\image.png"
+
+Problem: Nike shirt doesn't appear in web interface
+Solution: 1. Make sure script ran successfully (look for ✅ messages)
+         2. Restart Flask server
+         3. Hard refresh browser (Ctrl + Shift + R)
+         4. Check file exists: dir VITON-HD\datasets\test\cloth\14680_00.jpg
+
+Problem: Shirt appears distorted or misaligned in AR
+Solution: 1. Click "Men's Shirt Preset" button
+         2. Enable "Show Body Keypoints" to see alignment
+         3. Use quick adjustment buttons
+         4. Stand 3-6 feet from camera
+
+Problem: Script shows an error
+Solution: Make sure you have Python and Pillow installed:
+         pip install Pillow
+
+--------------------------------------------------------------------------------
+  💡 TIPS FOR BEST RESULTS
+--------------------------------------------------------------------------------
+
+✓ Save the Nike image in PNG or JPG format (both work)
+✓ Any size is fine - the script auto-resizes
+✓ For AR Try-On:
+  - Use the bright lime-green color to easily see alignment
+  - Try the "Men's Shirt Preset" first
+  - Stand straight facing the camera
+  - Ensure good lighting
+
+✓ The Nike shirt is great for testing because:
+  - Bright colors show alignment issues clearly
+  - Athletic fit works with most body types
+  - Clean design displays well in virtual try-on
+
+--------------------------------------------------------------------------------
+  📞 NEED MORE HELP?
+--------------------------------------------------------------------------------
+
+Check these files for detailed information:
+  • ADD_NIKE_SHIRT_GUIDE.md      → Full addition guide
+  • DATASET_MANAGEMENT.md        → Dataset organization
+  • AR_TROUBLESHOOTING.md        → AR alignment issues
+  • QUICK_ADJUST_GUIDE.md        → AR control buttons
+
+Or just ask me! I'm here to help. 😊
+
+--------------------------------------------------------------------------------
+  ⚡ ULTRA-QUICK VERSION (Copy & Paste)
+--------------------------------------------------------------------------------
+
+1. Save the Nike shirt image
+2. Run: python add_nike_shirt_direct.py
+3. Enter the image path when asked
+4. Wait for ✅ Success message
+5. Restart Flask: python web/app.py
+6. Refresh browser and look for 14680_00.jpg
+
+Done! 🎉
+
+================================================================================
+                    Enjoy your Nike shirt in VITON-HD!
+================================================================================
