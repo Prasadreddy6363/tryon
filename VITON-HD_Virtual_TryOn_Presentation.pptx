@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Presentation xmlns="http://schemas.openxmlformats.org/presentationml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="p14:spid p14:animId" xmlns:p14="http://schemas.microsoft.com/office/powerpoint/2010/main">
+  <sldMasterIdLst>
+    <sldMasterId id="2147483648" r:id="rId1"/>
+  </sldMasterIdLst>
+  <sldIdLst>
+    <sldId id="256" r:id="rId2"/>
+    <sldId id="257" r:id="rId3"/>
+    <sldId id="258" r:id="rId4"/>
+    <sldId id="259" r:id="rId5"/>
+    <sldId id="260" r:id="rId6"/>
+    <sldId id="261" r:id="rId7"/>
+    <sldId id="262" r:id="rId8"/>
+    <sldId id="263" r:id="rId9"/>
+    <sldId id="264" r:id="rId10"/>
+    <sldId id="265" r:id="rId11"/>
+    <sldId id="266" r:id="rId12"/>
+    <sldId id="267" r:id="rId13"/>
+    <sldId id="268" r:id="rId14"/>
+    <sldId id="269" r:id="rId15"/>
+    <sldId id="270" r:id="rId16"/>
+  </sldIdLst>
+  <notesMasterIdLst>
+    <notesMasterId r:id="rId17"/>
+  </notesMasterIdLst>
+</Presentation>

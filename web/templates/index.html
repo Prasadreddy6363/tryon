@@ -12,101 +12,132 @@
         }
         
         :root {
-            --primary-color: #6366f1;
-            --primary-hover: #4f46e5;
+            --primary-purple: #6366f1;
+            --primary-hover: #5558e3;
             --success-color: #10b981;
+            --teal-color: #14b8a6;
             --warning-color: #f59e0b;
             --danger-color: #ef4444;
-            --bg-color: #f8fafc;
+            --bg-light: #f5f7fa;
             --card-bg: #ffffff;
             --text-primary: #1e293b;
             --text-secondary: #64748b;
             --border-color: #e2e8f0;
-            --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
-            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
-            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 30px rgba(0,0,0,0.15);
         }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg-light);
             min-height: 100vh;
-            padding: 20px;
+            padding: 0;
+            margin: 0;
         }
         
         .container {
-            max-width: 1600px;
-            margin: 0 auto;
-            background: var(--card-bg);
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            overflow: hidden;
+            max-width: 100%;
+            margin: 0;
+            background: var(--bg-light);
         }
         
         .header {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            background: linear-gradient(135deg, #5b6cf2 0%, #7c5cef 50%, #9d4eed 100%);
             color: white;
-            padding: 30px;
+            padding: 25px 40px;
             text-align: center;
+            box-shadow: 0 4px 20px rgba(91, 108, 242, 0.3);
         }
         
-        .header h1 {
-            font-size: 36px;
-            margin-bottom: 10px;
+        .header-content {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 15px;
+            margin-bottom: 8px;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
         
         .header p {
-            opacity: 0.9;
-            font-size: 16px;
+            opacity: 0.95;
+            font-size: 15px;
+            margin: 0;
+            font-weight: 400;
         }
         
         .ai-badge {
-            background: rgba(255,255,255,0.2);
-            padding: 5px 15px;
+            background: rgba(255,255,255,0.25);
+            padding: 6px 14px;
             border-radius: 20px;
-            font-size: 14px;
-            font-weight: 600;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
             backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.3);
         }
         
         .tabs {
             display: flex;
-            background: #f1f5f9;
-            padding: 10px 30px;
-            gap: 10px;
-            border-bottom: 2px solid var(--border-color);
+            background: white;
+            padding: 15px 40px;
+            gap: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            flex-wrap: wrap;
         }
         
         .tab {
-            padding: 12px 24px;
-            background: transparent;
-            border: none;
+            padding: 10px 20px;
+            background: white;
+            border: 2px solid var(--border-color);
             border-radius: 8px;
             cursor: pointer;
-            font-size: 15px;
-            font-weight: 500;
+            font-size: 14px;
+            font-weight: 600;
             color: var(--text-secondary);
-            transition: all 0.3s;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
         .tab:hover {
-            background: rgba(99, 102, 241, 0.1);
-            color: var(--primary-color);
+            border-color: var(--primary-purple);
+            color: var(--primary-purple);
+            transform: translateY(-1px);
         }
         
         .tab.active {
-            background: var(--primary-color);
+            background: var(--primary-purple);
             color: white;
-            box-shadow: var(--shadow-md);
+            border-color: var(--primary-purple);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+        
+        .tab.success {
+            background: var(--teal-color);
+            color: white;
+            border-color: var(--teal-color);
+        }
+        
+        .tab.success:hover {
+            background: #0d9488;
+            border-color: #0d9488;
         }
         
         .tab-content {
             display: none;
-            padding: 30px;
+            padding: 30px 40px;
+            max-width: 1400px;
+            margin: 0 auto;
         }
         
         .tab-content.active {
@@ -114,20 +145,22 @@
         }
         
         .ai-panel {
-            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
-            padding: 20px;
+            background: white;
+            padding: 20px 24px;
             border-radius: 12px;
             margin-bottom: 25px;
-            border: 2px solid var(--primary-color);
+            border: 2px solid #e8eaf6;
+            box-shadow: var(--shadow-sm);
         }
         
         .ai-panel h3 {
-            color: var(--primary-color);
-            margin-bottom: 15px;
+            color: #5b6cf2;
+            margin-bottom: 16px;
             display: flex;
             align-items: center;
             gap: 10px;
-            font-size: 18px;
+            font-size: 16px;
+            font-weight: 700;
         }
         
         .ai-buttons {
@@ -137,821 +170,1970 @@
         }
         
         .ai-btn {
-            padding: 10px 20px;
+            padding: 9px 18px;
             background: white;
-            border: 2px solid var(--primary-color);
+            border: 2px solid #e8eaf6;
             border-radius: 8px;
-            color: var(--primary-color);
+            color: var(--primary-purple);
             cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            transition: all 0.3s;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
         
         .ai-btn:hover {
-            background: var(--primary-color);
+            background: var(--primary-purple);
             color: white;
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
+            border-color: var(--primary-purple);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
         }
+        
+        .skin-tone-panel {
+            background: white;
+            padding: 20px 24px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            border: 2px solid #fef3c7;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .skin-tone-panel h3 {
+            color: #f59e0b;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 16px;
+            font-weight: 700;
+        }
+        
+        .skin-tone-btn {
+            padding: 9px 18px;
+            background: white;
+            border: 2px solid #fef3c7;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .skin-tone-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .skin-tone-btn.all { color: #6366f1; border-color: #e8eaf6; }
+        .skin-tone-btn.all:hover { background: #6366f1; color: white; border-color: #6366f1; }
+        
+        .skin-tone-btn.light { color: #f59e0b; border-color: #fef3c7; }
+        .skin-tone-btn.light:hover { background: #f59e0b; color: white; border-color: #f59e0b; }
+        
+        .skin-tone-btn.intermediate { color: #f97316; border-color: #ffedd5; }
+        .skin-tone-btn.intermediate:hover { background: #f97316; color: white; border-color: #f97316; }
+        
+        .skin-tone-btn.tan { color: #ea580c; border-color: #fed7aa; }
+        .skin-tone-btn.tan:hover { background: #ea580c; color: white; border-color: #ea580c; }
+        
+        .skin-tone-btn.brown { color: #92400e; border-color: #fde68a; }
+        .skin-tone-btn.brown:hover { background: #92400e; color: white; border-color: #92400e; }
+        
+        .skin-tone-btn.dark { color: #451a03; border-color: #fcd34d; }
+        .skin-tone-btn.dark:hover { background: #451a03; color: white; border-color: #451a03; }
         
         .selection-area {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 30px;
+            gap: 25px;
             margin-bottom: 20px;
         }
         
+        .gallery-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
         .gallery {
-            background: var(--bg-color);
+            background: white;
             padding: 20px;
             border-radius: 12px;
             border: 2px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
         }
         
         .gallery-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--bg-light);
         }
         
         .gallery h2 {
             color: var(--text-primary);
-            font-size: 20px;
+            font-size: 17px;
+            font-weight: 700;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
         
         .search-box {
-            padding: 8px 15px;
+            padding: 8px 14px;
             border: 2px solid var(--border-color);
             border-radius: 8px;
-            font-size: 14px;
-            width: 200px;
-            transition: all 0.3s;
+            font-size: 13px;
+            width: 180px;
+            transition: all 0.2s;
         }
         
         .search-box:focus {
             outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+            border-color: var(--primary-purple);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
         }
         
-        .grid {
+        .image-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 15px;
-            max-height: 600px;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 12px;
+            max-height: 350px;
             overflow-y: auto;
-            padding: 15px;
-            background: white;
-            border-radius: 8px;
+            padding: 8px;
         }
         
-        .grid::-webkit-scrollbar {
+        .image-grid::-webkit-scrollbar {
             width: 8px;
         }
         
-        .grid::-webkit-scrollbar-track {
-            background: #f1f1f1;
+        .image-grid::-webkit-scrollbar-track {
+            background: var(--bg-light);
             border-radius: 4px;
         }
         
-        .grid::-webkit-scrollbar-thumb {
-            background: var(--primary-color);
+        .image-grid::-webkit-scrollbar-thumb {
+            background: var(--primary-purple);
             border-radius: 4px;
         }
         
-        .item {
-            cursor: pointer;
+        .image-grid::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-hover);
+        }
+        
+        .image-item {
             border: 3px solid transparent;
-            border-radius: 12px;
+            border-radius: 10px;
             overflow: hidden;
-            transition: all 0.3s;
-            position: relative;
-            background: white;
-            box-shadow: var(--shadow-sm);
+            cursor: pointer;
+            transition: all 0.2s;
+            background: var(--bg-light);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
         }
         
-        .item img {
+        .image-item img {
             width: 100%;
-            height: 180px;
+            height: 160px;
             object-fit: cover;
             display: block;
-            transition: transform 0.3s;
         }
         
-        .item:hover {
-            transform: translateY(-5px);
-            border-color: var(--success-color);
-            box-shadow: var(--shadow-lg);
+        .image-item:hover {
+            transform: translateY(-3px);
+            border-color: var(--primary-purple);
+            box-shadow: 0 6px 16px rgba(99, 102, 241, 0.25);
         }
         
-        .item:hover img {
-            transform: scale(1.1);
+        .image-item.selected {
+            border-color: var(--primary-purple);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+            transform: scale(1.02);
         }
         
-        .item.selected {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
-        }
-        
-        .item.recommended {
-            border-color: var(--warning-color);
-        }
-        
-        .item.recommended::before {
-            content: '⭐ AI Pick';
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background: var(--warning-color);
-            color: white;
-            padding: 3px 8px;
-            border-radius: 4px;
+        .image-name {
+            padding: 6px 8px;
             font-size: 10px;
-            font-weight: bold;
-            z-index: 1;
-        }
-        
-        .item .filename {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(transparent, rgba(0,0,0,0.8));
-            color: white;
-            padding: 20px 5px 5px;
-            font-size: 11px;
             text-align: center;
+            background: white;
+            color: var(--text-secondary);
+            font-weight: 500;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
         
-        .selection-info {
-            background: linear-gradient(135deg, #10b98120 0%, #05966920 100%);
-            padding: 20px;
+        .preview-box {
+            background: white;
             border-radius: 12px;
-            margin-bottom: 20px;
-            display: none;
+            padding: 20px;
+            text-align: center;
+            border: 2px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
         }
         
-        .selection-info.show {
-            display: block;
-        }
-        
-        .selection-preview {
+        .preview-box h3 {
+            color: var(--text-primary);
+            margin-bottom: 15px;
+            font-size: 16px;
+            font-weight: 700;
             display: flex;
-            gap: 20px;
             align-items: center;
             justify-content: center;
+            gap: 8px;
         }
         
-        .preview-card {
-            text-align: center;
-        }
-        
-        .preview-card img {
-            width: 150px;
-            height: 200px;
-            object-fit: cover;
+        .preview-image-container {
+            width: 100%;
+            height: 250px;
+            background: var(--bg-light);
             border-radius: 8px;
-            box-shadow: var(--shadow-md);
-            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 2px dashed var(--border-color);
         }
         
-        .preview-card p {
-            color: var(--text-primary);
+        .preview-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        
+        .preview-placeholder {
+            color: var(--text-secondary);
+            font-size: 14px;
             font-weight: 500;
         }
         
-        .submit-btn {
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin: 30px 0;
+        }
+        
+        .btn {
+            padding: 14px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
-            width: 100%;
-            max-width: 400px;
-            margin: 0 auto;
-            padding: 18px;
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #5b6cf2 0%, #7c5cef 100%);
             color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 18px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: var(--shadow-lg);
+            font-size: 15px;
+            font-weight: 700;
         }
         
-        .submit-btn:hover:not(:disabled) {
+        .btn-primary:hover:not(:disabled) {
             transform: translateY(-2px);
-            box-shadow: 0 15px 30px rgba(99, 102, 241, 0.4);
+            box-shadow: 0 8px 20px rgba(91, 108, 242, 0.4);
         }
         
-        .submit-btn:disabled {
-            background: #cbd5e1;
+        .btn-success {
+            background: var(--teal-color);
+            color: white;
+        }
+        
+        .btn-success:hover:not(:disabled) {
+            background: #0d9488;
+            transform: translateY(-2px);
+        }
+        
+        .btn:disabled {
+            opacity: 0.4;
             cursor: not-allowed;
+            transform: none;
             box-shadow: none;
         }
         
-        .loading {
-            display: none;
-            text-align: center;
-            padding: 40px;
-        }
-        
-        .loading.show {
-            display: block;
-        }
-        
-        .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid var(--primary-color);
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .history-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
-        }
-        
-        .history-card {
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: var(--shadow-md);
-            transition: transform 0.3s;
-        }
-        
-        .history-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-lg);
-        }
-        
-        .history-card img {
-            width: 100%;
-            height: 300px;
-            object-fit: cover;
-        }
-        
-        .history-card-info {
-            padding: 15px;
-        }
-        
-        .history-card-info p {
-            color: var(--text-secondary);
-            font-size: 13px;
-            margin-bottom: 5px;
-        }
-        
-        .auto-pair-card {
-            background: white;
-            border: 2px solid var(--border-color);
-            border-radius: 12px;
-            padding: 15px;
+        .stats-bar {
             display: flex;
-            gap: 15px;
-            align-items: center;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .auto-pair-card:hover {
-            border-color: var(--primary-color);
-            box-shadow: var(--shadow-md);
-            transform: translateX(5px);
-        }
-        
-        .auto-pair-card img {
-            width: 80px;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 6px;
-        }
-        
-        .badge {
-            display: inline-block;
-            padding: 4px 10px;
+            justify-content: space-around;
+            background: #f1f5f9;
+            padding: 20px;
             border-radius: 12px;
+            margin: 25px 0;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        
+        @media (max-width: 992px) {
+            .selection-area {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .tabs {
+                flex-wrap: wrap;
+            }
+            
+            .image-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .image-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .header h1 {
+                font-size: 24px;
+            }
+        }
+        
+        /* Notification Toast */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 16px 24px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 300px;
+            max-width: 500px;
+            animation: slideIn 0.3s ease;
+            border-left: 4px solid var(--primary-purple);
+        }
+        
+        .notification.success {
+            border-left-color: var(--success-color);
+        }
+        
+        .notification.error {
+            border-left-color: var(--danger-color);
+        }
+        
+        .notification.info {
+            border-left-color: var(--primary-purple);
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+        }
+        
+        /* Chatbot Styles */
+        .chatbot-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 10000;
+        }
+        
+        .chatbot-toggle {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #5b6cf2 0%, #7c5cef 100%);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(91, 108, 242, 0.4);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .chatbot-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(91, 108, 242, 0.6);
+        }
+        
+        .chatbot-window {
+            position: absolute;
+            bottom: 80px;
+            right: 0;
+            width: 380px;
+            height: 500px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            border: 2px solid var(--border-color);
+        }
+        
+        .chatbot-header {
+            background: linear-gradient(135deg, #5b6cf2 0%, #7c5cef 100%);
+            color: white;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .chatbot-header h3 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 700;
+        }
+        
+        .chatbot-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+        
+        .chatbot-close:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .chatbot-messages {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: var(--bg-light);
+        }
+        
+        .chatbot-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .chatbot-messages::-webkit-scrollbar-thumb {
+            background: var(--primary-purple);
+            border-radius: 3px;
+        }
+        
+        .message {
+            max-width: 85%;
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 14px;
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+        
+        .message.user {
+            background: var(--primary-purple);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+        
+        .message.bot {
+            background: white;
+            color: var(--text-primary);
+            align-self: flex-start;
+            border: 1px solid var(--border-color);
+            border-bottom-left-radius: 4px;
+        }
+        
+        .message.bot .bot-name {
+            font-weight: 700;
+            color: var(--primary-purple);
             font-size: 12px;
-            font-weight: 600;
-            margin-top: 10px;
+            margin-bottom: 4px;
         }
         
-        .badge-success {
-            background: #dcfce7;
-            color: #166534;
+        .suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
         }
         
-        .badge-info {
-            background: #dbeafe;
-            color: #1e40af;
+        .suggestion-btn {
+            background: var(--bg-light);
+            border: 1px solid var(--border-color);
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-primary);
+        }
+        
+        .suggestion-btn:hover {
+            background: var(--primary-purple);
+            color: white;
+            border-color: var(--primary-purple);
+        }
+        
+        .chatbot-input-area {
+            padding: 16px;
+            border-top: 1px solid var(--border-color);
+            background: white;
+        }
+        
+        .chatbot-input-container {
+            display: flex;
+            gap: 8px;
+            align-items: flex-end;
+        }
+        
+        .chatbot-input {
+            flex: 1;
+            padding: 10px 14px;
+            border: 2px solid var(--border-color);
+            border-radius: 20px;
+            font-size: 14px;
+            resize: none;
+            max-height: 80px;
+            min-height: 40px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        
+        .chatbot-input:focus {
+            border-color: var(--primary-purple);
+        }
+        
+        .chatbot-send {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-purple);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .chatbot-send:hover:not(:disabled) {
+            background: var(--primary-hover);
+            transform: scale(1.05);
+        }
+        
+        .chatbot-send:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 10px 14px;
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            border-bottom-left-radius: 4px;
+            align-self: flex-start;
+            max-width: 85%;
+        }
+        
+        .typing-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--text-secondary);
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+        
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes typing {
+            0%, 60%, 100% { opacity: 0.3; }
+            30% { opacity: 1; }
+        }
+        
+        @media (max-width: 768px) {
+            .chatbot-window {
+                width: calc(100vw - 40px);
+                height: 70vh;
+                bottom: 80px;
+                right: 20px;
+                left: 20px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>
-                🎨 VITON-HD Virtual Try-On
-                <span class="ai-badge">✨ AI Powered</span>
-            </h1>
+            <div class="header-content">
+                <span style="font-size: 32px;">🎨</span>
+                <h1>VITON-HD Virtual Try-On</h1>
+                <div class="ai-badge">✨ AI Powered</div>
+            </div>
             <p>Experience intelligent virtual try-on with AI recommendations</p>
         </div>
         
         <div class="tabs">
-            <button class="tab active" onclick="switchTab('manual')">👕 Manual Selection</button>
-            <button class="tab" onclick="switchTab('auto')">🤖 AI Auto-Pair</button>
-            <button class="tab" onclick="switchTab('history')">📜 History</button>
-            <a href="/ar_tryon" class="tab" style="text-decoration: none; line-height: 1.5;">
-                📹 AR Live Try-On <span style="font-size: 10px; background: #ef4444; padding: 2px 6px; border-radius: 8px; margin-left: 5px;">NEW</span>
-            </a>
-            <a href="/add_clothing" class="tab" style="text-decoration: none; line-height: 1.5; background: #10b981; color: white;">
-                ➕ Add 2D Clothing <span style="font-size: 10px; background: rgba(255,255,255,0.3); padding: 2px 6px; border-radius: 8px; margin-left: 5px;">TOOL</span>
-            </a>
+            <button class="tab active" onclick="switchTab('standard', this)">
+                <span>👕</span> Manual Selection
+            </button>
+            <button class="tab" onclick="switchTab('auto', this)">
+                <span>🤖</span> AI Auto-Pair
+            </button>
+            <button class="tab" onclick="switchTab('history', this)">
+                <span>📜</span> History
+            </button>
+            <button class="tab" onclick="switchTab('ar', this)">
+                <span>📹</span> AR Live Try-On
+                <span style="background: #ef4444; color: white; padding: 2px 8px; border-radius: 12px; font-size: 10px; margin-left: 4px;">LIVE</span>
+            </button>
+            <button class="tab success" onclick="switchTab('add', this)">
+                <span>➕</span> Add 2D Clothing
+                <span style="background: rgba(255,255,255,0.3); padding: 2px 8px; border-radius: 12px; font-size: 10px; margin-left: 4px;">NEW</span>
+            </button>
         </div>
         
-        <form method="POST" action="/tryon" id="tryonForm">
-            <!-- Manual Selection Tab -->
-            <div class="tab-content active" id="manual-tab">
-                <div class="ai-panel">
-                    <h3>🧠 AI Assistant</h3>
-                    <div class="ai-buttons">
-                        <button type="button" class="ai-btn" onclick="getRecommendations()">
-                            <span>✨</span> Smart Recommendations
-                        </button>
-                        <button type="button" class="ai-btn" onclick="findSimilar('person')">
-                            <span>🔍</span> Similar People
-                        </button>
-                        <button type="button" class="ai-btn" onclick="findSimilar('cloth')">
-                            <span>👔</span> Similar Clothes
-                        </button>
-                        <button type="button" class="ai-btn" onclick="clearSelections()">
-                            <span>🔄</span> Clear All
-                        </button>
-                    </div>
+        <div class="tab-content active" id="standard-tab">
+            <div class="ai-panel">
+                <h3>🤖 AI Assistant</h3>
+                <div class="ai-buttons">
+                    <button class="ai-btn" onclick="recommendClothes()">
+                        <span>✨</span> Smart Recommendations
+                    </button>
+                    <button class="ai-btn" onclick="findSimilar('person')">
+                        <span>🔍</span> Similar People
+                    </button>
+                    <button class="ai-btn" onclick="findSimilar('cloth')">
+                        <span>👔</span> Similar Clothes
+                    </button>
+                    <button class="ai-btn" onclick="clearAll()">
+                        <span>🗑️</span> Clear All
+                    </button>
                 </div>
-                
-                <div class="ai-panel" style="border: 2px solid #f59e0b;">
-                    <h3 style="color: #f59e0b;">🎨 Skin Tone Filter</h3>
-                    <div class="ai-buttons">
-                        <button type="button" class="ai-btn" onclick="filterBySkinTone('all')" 
-                                style="border-color: #6366f1; color: #6366f1;">
-                            <span>👥</span> All People
-                        </button>
-                        <button type="button" class="ai-btn" onclick="filterBySkinTone('light')" 
-                                style="border-color: #fcd34d; color: #f59e0b;">
-                            <span>☀️</span> Light Skin
-                        </button>
-                        <button type="button" class="ai-btn" onclick="filterBySkinTone('intermediate')" 
-                                style="border-color: #fbbf24; color: #d97706;">
-                            <span>🌤️</span> Intermediate Skin
-                        </button>
-                        <button type="button" class="ai-btn" onclick="filterBySkinTone('tan')" 
-                                style="border-color: #d97706; color: #b45309;">
-                            <span>🌅</span> Tan Skin
-                        </button>
-                        <button type="button" class="ai-btn" onclick="filterBySkinTone('brown')" 
-                                style="border-color: #92400e; color: #78350f;">
-                            <span>🌄</span> Brown Skin
-                        </button>
-                        <button type="button" class="ai-btn" onclick="filterBySkinTone('dark')" 
-                                style="border-color: #451a03; color: #292524;">
-                            <span>🌃</span> Dark Skin
-                        </button>
-                    </div>
-                    <div id="skinToneStatus" style="margin-top: 10px; font-size: 13px; color: #64748b; text-align: center;"></div>
+            </div>
+            
+            <div class="skin-tone-panel">
+                <h3>🎨 Skin Tone Filter</h3>
+                <div class="ai-buttons">
+                    <button class="skin-tone-btn all" onclick="filterBySkinTone('all')">
+                        <span>👥</span> All People
+                    </button>
+                    <button class="skin-tone-btn light" onclick="filterBySkinTone('light')">
+                        <span>☀️</span> Light Skin
+                    </button>
+                    <button class="skin-tone-btn intermediate" onclick="filterBySkinTone('intermediate')">
+                        <span>🌤️</span> Intermediate Skin
+                    </button>
+                    <button class="skin-tone-btn tan" onclick="filterBySkinTone('tan')">
+                        <span>🌅</span> Tan Skin
+                    </button>
+                    <button class="skin-tone-btn brown" onclick="filterBySkinTone('brown')">
+                        <span>🌰</span> Brown Skin
+                    </button>
+                    <button class="skin-tone-btn dark" onclick="filterBySkinTone('dark')">
+                        <span>🌑</span> Dark Skin
+                    </button>
                 </div>
-                
-                <div class="selection-area">
+            </div>
+            
+            <div class="selection-area">
+                <div class="gallery-section">
                     <div class="gallery">
                         <div class="gallery-header">
-                            <h2><span>👤</span> Select Person</h2>
-                            <input type="text" class="search-box" placeholder="Search..." 
-                                   onkeyup="filterItems('peopleGrid', this.value)">
+                            <h2>👤 Select Person</h2>
+                            <input type="text" class="search-box" placeholder="Search people..." oninput="filterImages('person', this.value)">
                         </div>
-                        <div class="grid" id="peopleGrid">
-                            {% for p in people %}
-                            <div class="item" data-name="{{ p }}" onclick="selectPerson(this, '{{ p }}')">
-                                <img src="{{ url_for('preview_person', filename=p) }}" alt="{{ p }}" loading="lazy">
-                                <div class="filename">{{ p }}</div>
+                        <div class="image-grid" id="person-grid">
+                            {% for person in people %}
+                            <div class="image-item" data-person="{{ person }}" onclick="selectPerson('{{ person }}', this)">
+                                <img src="{{ url_for('preview_person', filename=person) }}" alt="{{ person }}">
+                                <div class="image-name">{{ person }}</div>
                             </div>
                             {% endfor %}
                         </div>
                     </div>
                     
-                    <div class="gallery">
-                        <div class="gallery-header">
-                            <h2><span>👕</span> Select Clothing</h2>
-                            <input type="text" class="search-box" placeholder="Search..." 
-                                   onkeyup="filterItems('clothGrid', this.value)">
-                        </div>
-                        <div class="grid" id="clothGrid">
-                            {% for c in clothes %}
-                            <div class="item" data-name="{{ c }}" onclick="selectCloth(this, '{{ c }}')">
-                                <img src="{{ url_for('preview_cloth', filename=c) }}" alt="{{ c }}" loading="lazy">
-                                <div class="filename">{{ c }}</div>
-                            </div>
-                            {% endfor %}
+                    <div class="preview-box">
+                        <h3>👤 Selected Person</h3>
+                        <div class="preview-image-container">
+                            <div class="preview-placeholder" id="person-preview-placeholder">No person selected</div>
+                            <img class="preview-image" id="person-preview" style="display: none;">
                         </div>
                     </div>
                 </div>
                 
-                <div class="selection-info" id="selectionInfo">
-                    <h3 style="text-align: center; color: var(--success-color); margin-bottom: 15px;">✓ Your Selection</h3>
-                    <div class="selection-preview" id="selectionPreview"></div>
-                </div>
-                
-                <input type="hidden" name="person" id="personInput">
-                <input type="hidden" name="cloth" id="clothInput">
-                <button type="submit" class="submit-btn" id="submitBtn" disabled>
-                    <span>🚀</span> Generate Virtual Try-On
-                </button>
-                
-                <div class="loading" id="loading">
-                    <div class="spinner"></div>
-                    <p>AI is generating your virtual try-on... Please wait</p>
+                <div class="gallery-section">
+                    <div class="gallery">
+                        <div class="gallery-header">
+                            <h2>👕 Select Clothing</h2>
+                            <input type="text" class="search-box" placeholder="Search clothes..." oninput="filterImages('cloth', this.value)">
+                        </div>
+                        <div class="image-grid" id="cloth-grid">
+                            {% for cloth in clothes %}
+                            <div class="image-item" data-cloth="{{ cloth }}" onclick="selectCloth('{{ cloth }}', this)">
+                                <img src="{{ url_for('preview_cloth', filename=cloth) }}" alt="{{ cloth }}">
+                                <div class="image-name">{{ cloth }}</div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <div class="preview-box">
+                        <h3>👕 Selected Clothing</h3>
+                        <div class="preview-image-container">
+                            <div class="preview-placeholder" id="cloth-preview-placeholder">No clothing selected</div>
+                            <img class="preview-image" id="cloth-preview" style="display: none;">
+                        </div>
+                    </div>
                 </div>
             </div>
             
-            <!-- Auto-Pair Tab -->
-            <div class="tab-content" id="auto-tab">
-                <div style="text-align: center; margin-bottom: 30px;">
-                    <h2 style="color: var(--text-primary); margin-bottom: 10px;">🤖 AI Auto-Pairing</h2>
-                    <p style="color: var(--text-secondary);">Let AI suggest the best person-cloth combinations</p>
-                    <button type="button" class="ai-btn" onclick="loadAutoPairs()" style="margin: 20px auto;">
-                        <span>🔄</span> Generate AI Pairs
+            <div class="action-buttons">
+                <button class="btn btn-primary" id="tryon-btn" onclick="submitTryOn()" disabled>
+                    <span>🎨</span> Generate Virtual Try-On
+                </button>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="auto-tab">
+            <div style="text-align: center; padding: 50px 20px;">
+                <h2 style="font-size: 32px; margin-bottom: 20px; color: var(--text-primary);">🤖 AI Auto-Pair</h2>
+                <p style="font-size: 18px; color: var(--text-secondary); max-width: 700px; margin: 0 auto 30px;">
+                    Let AI automatically find the best person-clothing combinations based on color harmony, pose compatibility, and style matching.
+                </p>
+                <button class="btn btn-primary" onclick="autoPairAndSwitch()" style="display: inline-flex; width: auto;">
+                    <span>✨</span> Generate Auto Pair & Try On
+                </button>
+                <div style="margin-top: 40px; display: flex; justify-content: center; gap: 30px; flex-wrap: wrap;">
+                    <div style="background: white; padding: 25px; border-radius: 12px; max-width: 280px; box-shadow: var(--shadow-sm); border: 2px solid var(--border-color);">
+                        <div style="font-size: 48px; margin-bottom: 15px;">🎨</div>
+                        <h3 style="color: var(--text-primary); margin-bottom: 10px;">Color Harmony</h3>
+                        <p style="color: var(--text-secondary);">AI analyzes color compatibility</p>
+                    </div>
+                    <div style="background: white; padding: 25px; border-radius: 12px; max-width: 280px; box-shadow: var(--shadow-sm); border: 2px solid var(--border-color);">
+                        <div style="font-size: 48px; margin-bottom: 15px;">🧍</div>
+                        <h3 style="color: var(--text-primary); margin-bottom: 10px;">Pose Detection</h3>
+                        <p style="color: var(--text-secondary);">Ensures valid body poses</p>
+                    </div>
+                    <div style="background: white; padding: 25px; border-radius: 12px; max-width: 280px; box-shadow: var(--shadow-sm); border: 2px solid var(--border-color);">
+                        <div style="font-size: 48px; margin-bottom: 15px;">⚡</div>
+                        <h3 style="color: var(--text-primary); margin-bottom: 10px;">Instant Results</h3>
+                        <p style="color: var(--text-secondary);">Get optimal pairs in seconds</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="history-tab">
+            <div style="padding: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                    <div style="flex: 1; text-align: center;">
+                        <h2 style="font-size: 32px; margin-bottom: 10px; color: var(--text-primary);">📜 Try-On History</h2>
+                        <p style="font-size: 16px; color: var(--text-secondary);">
+                            View your previous virtual try-on results
+                        </p>
+                    </div>
+                    <button id="clear-history-btn" onclick="clearAllHistory()" style="display: none; padding: 10px 20px; background: #ef4444; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                        🗑️ Clear All
                     </button>
                 </div>
-                <div id="autoPairContainer" style="display: grid; gap: 15px;"></div>
-            </div>
-            
-            <!-- History Tab -->
-            <div class="tab-content" id="history-tab">
-                <div style="text-align: center; margin-bottom: 30px;">
-                    <h2 style="color: var(--text-primary); margin-bottom: 10px;">📜 Generation History</h2>
-                    <p style="color: var(--text-secondary);">Your recent virtual try-on results</p>
+                
+                <div id="history-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
+                    <!-- History items will be loaded here -->
                 </div>
-                <div class="history-grid" id="historyGrid">
-                    <p style="text-align: center; color: var(--text-secondary); grid-column: 1/-1;">
-                        No history yet. Generate your first try-on!
-                    </p>
+                
+                <div id="history-empty" style="text-align: center; padding: 80px 20px; display: none;">
+                    <span style="font-size: 64px;">📂</span>
+                    <p style="margin-top: 20px; color: var(--text-secondary); font-size: 18px;">No history available yet. Start creating try-ons!</p>
                 </div>
             </div>
-        </form>
+        </div>
+        
+        <div class="tab-content" id="ar-tab">
+            <div style="text-align: center; padding: 50px 20px;">
+                <h2 style="font-size: 32px; margin-bottom: 20px; color: var(--text-primary);">📹 AR Live Virtual Try-On</h2>
+                <p style="font-size: 18px; color: var(--text-secondary); max-width: 700px; margin: 0 auto 30px;">
+                    Experience real-time virtual try-on with your webcam. See how clothes look on you instantly with AI-powered body tracking.
+                </p>
+                <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                    <a href="/ar_tryon" class="btn btn-primary" style="display: inline-flex; text-decoration: none; width: auto;">
+                        <span>🎮</span> Launch AR Try-On
+                    </a>
+                    <a href="/instant_tryon" class="btn" style="display: inline-flex; text-decoration: none; width: auto; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none;">
+                        <span>⚡</span> Instant Try-On (Snapchat Style)
+                    </a>
+                </div>
+                <div style="margin-top: 40px; display: flex; justify-content: center; gap: 30px; flex-wrap: wrap;">
+                    <div style="background: white; padding: 25px; border-radius: 12px; max-width: 280px; box-shadow: var(--shadow-sm); border: 2px solid var(--border-color);">
+                        <div style="font-size: 48px; margin-bottom: 15px;">⚡</div>
+                        <h3 style="color: var(--text-primary); margin-bottom: 10px;">Real-time Processing</h3>
+                        <p style="color: var(--text-secondary);">See results instantly with no waiting time</p>
+                    </div>
+                    <div style="background: white; padding: 25px; border-radius: 12px; max-width: 280px; box-shadow: var(--shadow-sm); border: 2px solid var(--border-color);">
+                        <div style="font-size: 48px; margin-bottom: 15px;">🎯</div>
+                        <h3 style="color: var(--text-primary); margin-bottom: 10px;">Precise Tracking</h3>
+                        <p style="color: var(--text-secondary);">Advanced AI tracks your body movements accurately</p>
+                    </div>
+                    <div style="background: white; padding: 25px; border-radius: 12px; max-width: 280px; box-shadow: var(--shadow-sm); border: 2px solid var(--border-color);">
+                        <div style="font-size: 48px; margin-bottom: 15px;">📸</div>
+                        <h3 style="color: var(--text-primary); margin-bottom: 10px;">Capture Moments</h3>
+                        <p style="color: var(--text-secondary);">Save your favorite try-on moments with one click</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="virtual-tab">
+            <div style="text-align: center; padding: 50px 20px;">
+                <h2 style="font-size: 32px; margin-bottom: 20px; color: var(--text-primary);">⚙️ Virtual Try-On Pipeline</h2>
+                <p style="font-size: 18px; color: var(--text-secondary); max-width: 700px; margin: 0 auto 30px;">
+                    Visualize the complete virtual try-on process with step-by-step pipeline visualization.
+                </p>
+                <a href="/virtual_tryon" class="btn btn-success" style="display: inline-flex; text-decoration: none; width: auto;">
+                    <span>📊</span> View Pipeline
+                </a>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="add-tab">
+            <div style="text-align: center; padding: 50px 20px;">
+                <h2 style="font-size: 32px; margin-bottom: 20px; color: var(--text-primary);">➕ Add New Clothing</h2>
+                <p style="font-size: 18px; color: var(--text-secondary); max-width: 700px; margin: 0 auto 30px;">
+                    Upload and process your own clothing items to add them to the virtual try-on dataset.
+                </p>
+                <a href="/add_clothing" class="btn btn-success" style="display: inline-flex; text-decoration: none; width: auto;">
+                    <span>📁</span> Open Clothing Manager
+                </a>
+                <div style="margin-top: 40px; display: flex; justify-content: center; gap: 30px; flex-wrap: wrap;">
+                    <div style="background: white; padding: 25px; border-radius: 12px; max-width: 280px; box-shadow: var(--shadow-sm); border: 2px solid var(--border-color);">
+                        <div style="font-size: 48px; margin-bottom: 15px;">🖼️</div>
+                        <h3 style="color: var(--text-primary); margin-bottom: 10px;">Drag & Drop</h3>
+                        <p style="color: var(--text-secondary);">Easy upload with drag and drop interface</p>
+                    </div>
+                    <div style="background: white; padding: 25px; border-radius: 12px; max-width: 280px; box-shadow: var(--shadow-sm); border: 2px solid var(--border-color);">
+                        <div style="font-size: 48px; margin-bottom: 15px;">✂️</div>
+                        <h3 style="color: var(--text-primary); margin-bottom: 10px;">Auto Processing</h3>
+                        <p style="color: var(--text-secondary);">Automatic background removal and resizing</p>
+                    </div>
+                    <div style="background: white; padding: 25px; border-radius: 12px; max-width: 280px; box-shadow: var(--shadow-sm); border: 2px solid var(--border-color);">
+                        <div style="font-size: 48px; margin-bottom: 15px;">🎨</div>
+                        <h3 style="color: var(--text-primary); margin-bottom: 10px;">Batch Upload</h3>
+                        <p style="color: var(--text-secondary);">Process multiple items at once</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="stats-bar">
+            <div class="stat-item">
+                <div class="stat-value" id="person-count">0</div>
+                <div class="stat-label">People</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="cloth-count">0</div>
+                <div class="stat-label">Clothing Items</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="pair-count">0</div>
+                <div class="stat-label">Possible Pairs</div>
+            </div>
+        </div>
     </div>
 
     <script>
         let selectedPerson = null;
         let selectedCloth = null;
-
-        function selectPerson(elem, name) {
-            document.querySelectorAll('#peopleGrid .item').forEach(e => e.classList.remove('selected'));
-            elem.classList.add('selected');
-            selectedPerson = name;
-            document.getElementById('personInput').value = name;
-            updateSelection();
-        }
-
-        function selectCloth(elem, name) {
-            document.querySelectorAll('#clothGrid .item').forEach(e => e.classList.remove('selected'));
-            elem.classList.add('selected');
-            selectedCloth = name;
-            document.getElementById('clothInput').value = name;
-            updateSelection();
-        }
-
-        function updateSelection() {
-            const btn = document.getElementById('submitBtn');
-            btn.disabled = !(selectedPerson && selectedCloth);
-            
-            const info = document.getElementById('selectionInfo');
-            const preview = document.getElementById('selectionPreview');
-            
-            if (selectedPerson && selectedCloth) {
-                info.classList.add('show');
-                preview.innerHTML = `
-                    <div class="preview-card">
-                        <img src="/preview/person/${selectedPerson}" alt="Person">
-                        <p>👤 ${selectedPerson}</p>
-                        <span class="badge badge-info">Person</span>
-                    </div>
-                    <div style="font-size: 40px; color: var(--primary-color);">+</div>
-                    <div class="preview-card">
-                        <img src="/preview/cloth/${selectedCloth}" alt="Cloth">
-                        <p>👕 ${selectedCloth}</p>
-                        <span class="badge badge-success">Clothing</span>
-                    </div>
-                    <div style="font-size: 40px; color: var(--primary-color);">=</div>
-                    <div class="preview-card">
-                        <div style="width: 150px; height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-                                    border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 50px;">
-                            ✨
-                        </div>
-                        <p>AI Magic!</p>
-                    </div>
-                `;
-            } else {
-                info.classList.remove('show');
-            }
-        }
-
-        async function getRecommendations() {
-            if (!selectedPerson) {
-                alert('Please select a person first!');
-                return;
-            }
-            
-            try {
-                const response = await fetch('/api/recommend_clothes', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({person: selectedPerson})
-                });
-                
-                const data = await response.json();
-                
-                // Clear previous recommendations
-                document.querySelectorAll('#clothGrid .item').forEach(e => e.classList.remove('recommended'));
-                
-                // Highlight recommendations
-                data.recommendations.forEach(cloth => {
-                    const item = document.querySelector(`#clothGrid .item[data-name="${cloth}"]`);
-                    if (item) {
-                        item.classList.add('recommended');
-                        item.scrollIntoView({behavior: 'smooth', block: 'nearest'});
-                    }
-                });
-                
-                alert(`✨ AI found ${data.recommendations.length} recommended clothes for this person!`);
-            } catch (error) {
-                console.error('Error getting recommendations:', error);
-            }
-        }
-
-        async function findSimilar(type) {
-            const selected = type === 'person' ? selectedPerson : selectedCloth;
-            const gridId = type === 'person' ? 'peopleGrid' : 'clothGrid';
-            
-            if (!selected) {
-                alert(`Please select a ${type} first!`);
-                return;
-            }
-            
-            try {
-                const response = await fetch('/api/similar_items', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({type, name: selected})
-                });
-                
-                const data = await response.json();
-                
-                // Clear previous highlights
-                document.querySelectorAll(`#${gridId} .item`).forEach(e => e.classList.remove('recommended'));
-                
-                // Highlight similar items
-                data.similar.forEach(item => {
-                    const elem = document.querySelector(`#${gridId} .item[data-name="${item}"]`);
-                    if (elem) {
-                        elem.classList.add('recommended');
-                        elem.scrollIntoView({behavior: 'smooth', block: 'nearest'});
-                    }
-                });
-                
-                alert(`🔍 Found ${data.similar.length} similar ${type}s!`);
-            } catch (error) {
-                console.error('Error finding similar items:', error);
-            }
-        }
-
-        function clearSelections() {
-            document.querySelectorAll('.item').forEach(e => {
-                e.classList.remove('selected', 'recommended');
-            });
-            selectedPerson = null;
-            selectedCloth = null;
-            document.getElementById('personInput').value = '';
-            document.getElementById('clothInput').value = '';
-            updateSelection();
-        }
-
-        function filterItems(gridId, query) {
-            const items = document.querySelectorAll(`#${gridId} .item`);
-            const lowerQuery = query.toLowerCase();
-            
-            items.forEach(item => {
-                const name = item.dataset.name.toLowerCase();
-                item.style.display = name.includes(lowerQuery) ? 'block' : 'none';
-            });
-        }
-
-        async function filterBySkinTone(skinTone) {
-            const statusDiv = document.getElementById('skinToneStatus');
-            const peopleGrid = document.getElementById('peopleGrid');
-            
-            try {
-                statusDiv.textContent = 'Loading...';
-                
-                const response = await fetch('/api/skin_tone_filter', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({skin_tone: skinTone})
-                });
-                
-                const data = await response.json();
-                
-                if (data.error) {
-                    statusDiv.innerHTML = `<span style="color: var(--danger-color);">⚠️ ${data.error}</span>`;
-                    alert(data.error);
-                    return;
-                }
-                
-                // Clear current grid
-                peopleGrid.innerHTML = '';
-                
-                if (data.people.length === 0) {
-                    peopleGrid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 40px;">No people found in this category</p>';
-                    statusDiv.innerHTML = `<span style="color: var(--warning-color);">No people found in "${skinTone}" category</span>`;
-                    return;
-                }
-                
-                // Populate with filtered people
-                data.people.forEach(person => {
-                    const div = document.createElement('div');
-                    div.className = 'item';
-                    div.dataset.name = person;
-                    div.onclick = function() { selectPerson(this, person); };
-                    div.innerHTML = `
-                        <img src="/preview/person/${person}" alt="${person}" loading="lazy">
-                        <div class="filename">${person}</div>
-                    `;
-                    peopleGrid.appendChild(div);
-                });
-                
-                // Update status
-                const categoryLabels = {
-                    'all': 'All People',
-                    'light': 'Light Skin',
-                    'intermediate': 'Intermediate Skin',
-                    'tan': 'Tan Skin',
-                    'brown': 'Brown Skin',
-                    'dark': 'Dark Skin'
-                };
-                
-                statusDiv.innerHTML = `<span style="color: var(--success-color);">✓ Showing ${data.total} people with ${categoryLabels[skinTone]}</span>`;
-                
-            } catch (error) {
-                console.error('Error filtering by skin tone:', error);
-                statusDiv.innerHTML = `<span style="color: var(--danger-color);">Error: ${error.message}</span>`;
-            }
-        }
         
-        // Load skin tone stats on page load
-        async function loadSkinToneStats() {
-            try {
-                const response = await fetch('/api/skin_tone_stats');
-                const data = await response.json();
-                
-                if (!data.available) {
-                    // Skin tone classification not available, hide the panel
-                    const skinTonePanel = document.querySelector('.ai-panel[style*="border: 2px solid #f59e0b"]');
-                    if (skinTonePanel) {
-                        skinTonePanel.innerHTML = `
-                            <h3 style="color: #f59e0b;">🎨 Skin Tone Filter</h3>
-                            <p style="color: var(--text-secondary); margin: 10px 0;">⚠️ Skin tone classification not available</p>
-                            <p style="font-size: 13px; color: var(--text-secondary);">Run <code>python classify_skin_tone.py</code> to enable this feature</p>
-                        `;
-                    }
-                }
-            } catch (error) {
-                console.error('Error loading skin tone stats:', error);
+        // Initialize on load
+        window.onload = function() {
+            updateStats();
+        };
+        
+        function switchTab(tabName, buttonElement) {
+            console.log('Switching to tab:', tabName);
+            
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab content
+            const targetTab = document.getElementById(tabName + '-tab');
+            if (targetTab) {
+                targetTab.classList.add('active');
+            } else {
+                console.error('Tab not found:', tabName + '-tab');
             }
-        }
-
-        function switchTab(tabName) {
-            // Update tab buttons
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            event.target.classList.add('active');
             
-            // Update tab content
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            document.getElementById(`${tabName}-tab`).classList.add('active');
+            // Add active class to clicked tab button
+            if (buttonElement) {
+                buttonElement.classList.add('active');
+            } else if (event && event.currentTarget) {
+                event.currentTarget.classList.add('active');
+            }
             
-            // Load data for specific tabs
+            // Load history when history tab is opened
             if (tabName === 'history') {
                 loadHistory();
             }
         }
-
-        async function loadAutoPairs() {
-            const container = document.getElementById('autoPairContainer');
-            container.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Loading AI pairs...</p>';
-            
-            try {
-                const response = await fetch('/api/auto_pair');
-                const data = await response.json();
-                
-                if (data.pairs.length === 0) {
-                    container.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">No pairs available</p>';
-                    return;
-                }
-                
-                container.innerHTML = data.pairs.map(pair => `
-                    <div class="auto-pair-card" onclick="applyPair('${pair.person}', '${pair.cloth}')">
-                        <img src="/preview/person/${pair.person}" alt="Person">
-                        <div style="font-size: 24px; color: var(--primary-color);">+</div>
-                        <img src="/preview/cloth/${pair.cloth}" alt="Cloth">
-                        <div style="flex: 1;">
-                            <p style="font-weight: 600; color: var(--text-primary); margin-bottom: 5px;">AI Recommended Pair</p>
-                            <p style="font-size: 12px; color: var(--text-secondary);">👤 ${pair.person}</p>
-                            <p style="font-size: 12px; color: var(--text-secondary);">👕 ${pair.cloth}</p>
-                            <span class="badge badge-success">✨ Smart Match</span>
-                        </div>
-                        <button type="button" class="ai-btn" onclick="event.stopPropagation(); applyPair('${pair.person}', '${pair.cloth}')">
-                            Try Now →
-                        </button>
-                    </div>
-                `).join('');
-            } catch (error) {
-                console.error('Error loading auto pairs:', error);
-                container.innerHTML = '<p style="text-align: center; color: var(--danger-color);">Error loading pairs</p>';
-            }
-        }
-
-        function applyPair(person, cloth) {
-            // Switch to manual tab
-            document.querySelectorAll('.tab')[0].click();
-            
-            // Select the items
-            setTimeout(() => {
-                const personElem = document.querySelector(`#peopleGrid .item[data-name="${person}"]`);
-                const clothElem = document.querySelector(`#clothGrid .item[data-name="${cloth}"]`);
-                
-                if (personElem) selectPerson(personElem, person);
-                if (clothElem) selectCloth(clothElem, cloth);
-                
-                // Scroll to submit button
-                document.getElementById('submitBtn').scrollIntoView({behavior: 'smooth', block: 'center'});
-            }, 100);
-        }
-
-        async function loadHistory() {
-            const grid = document.getElementById('historyGrid');
-            
-            try {
-                const response = await fetch('/api/history');
-                const data = await response.json();
-                
-                if (data.history.length === 0) {
-                    grid.innerHTML = '<p style="text-align: center; color: var(--text-secondary); grid-column: 1/-1;">No history yet. Generate your first try-on!</p>';
-                    return;
-                }
-                
-                grid.innerHTML = data.history.map(item => {
-                    const date = new Date(item.timestamp * 1000).toLocaleString();
-                    return `
-                        <div class="history-card">
-                            <img src="${item.result}" alt="Result">
-                            <div class="history-card-info">
-                                <p><strong>👤</strong> ${item.person}</p>
-                                <p><strong>👕</strong> ${item.cloth}</p>
-                                <p><strong>📅</strong> ${date}</p>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-            } catch (error) {
-                console.error('Error loading history:', error);
-            }
-        }
-
-        // Show loading on form submit
-        document.getElementById('tryonForm').addEventListener('submit', function() {
-            document.getElementById('loading').classList.add('show');
-            document.getElementById('submitBtn').disabled = true;
-        });
         
-        // Load skin tone stats when page loads
-        window.addEventListener('load', loadSkinToneStats);
+        function loadHistory() {
+            console.log('Loading history...');
+            
+            fetch('/api/history')
+            .then(response => response.json())
+            .then(data => {
+                console.log('History data:', data);
+                
+                const container = document.getElementById('history-container');
+                const emptyState = document.getElementById('history-empty');
+                
+                if (data.error) {
+                    console.error('History error:', data.error);
+                    container.style.display = 'none';
+                    emptyState.style.display = 'block';
+                    return;
+                }
+                
+                const history = data.history || [];
+                const clearBtn = document.getElementById('clear-history-btn');
+                
+                if (history.length === 0) {
+                    container.style.display = 'none';
+                    emptyState.style.display = 'block';
+                    clearBtn.style.display = 'none';
+                } else {
+                    container.style.display = 'grid';
+                    emptyState.style.display = 'none';
+                    clearBtn.style.display = 'block';
+                    
+                    // Clear existing items
+                    container.innerHTML = '';
+                    
+                    // Add history items
+                    history.forEach((item, index) => {
+                        const date = new Date(item.timestamp * 1000);
+                        const dateStr = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+                        
+                        const card = document.createElement('div');
+                        card.style.cssText = `
+                            background: white;
+                            border-radius: 12px;
+                            padding: 15px;
+                            border: 2px solid var(--border-color);
+                            box-shadow: var(--shadow-sm);
+                            transition: all 0.2s;
+                            position: relative;
+                        `;
+                        
+                        card.innerHTML = `
+                            <button onclick="deleteHistoryItem(${index}, event)" style="position: absolute; top: 10px; right: 10px; background: #ef4444; color: white; border: none; border-radius: 6px; padding: 6px 10px; font-size: 12px; font-weight: 600; cursor: pointer; z-index: 10; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+                                🗑️ Delete
+                            </button>
+                            <div style="position: relative; border-radius: 8px; overflow: hidden; margin-bottom: 12px;">
+                                <img src="${item.result}" alt="Try-on result" style="width: 100%; height: 300px; object-fit: cover; display: block;">
+                            </div>
+                            <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 8px;">
+                                <div style="margin-bottom: 4px;"><strong>Person:</strong> ${item.person}</div>
+                                <div style="margin-bottom: 4px;"><strong>Clothing:</strong> ${item.cloth}</div>
+                                <div style="font-size: 11px; color: var(--text-secondary); opacity: 0.7;">${dateStr}</div>
+                            </div>
+                            <div style="display: flex; gap: 8px;">
+                                <button onclick="viewResult('${item.result}')" style="flex: 1; padding: 8px; background: var(--primary-purple); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer;">
+                                    👁️ View
+                                </button>
+                                <a href="${item.result}" download style="flex: 1; padding: 8px; background: var(--teal-color); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: none; text-align: center; display: block;">
+                                    💾 Download
+                                </a>
+                            </div>
+                        `;
+                        
+                        card.onmouseover = () => {
+                            card.style.transform = 'translateY(-4px)';
+                            card.style.boxShadow = '0 8px 20px rgba(99, 102, 241, 0.2)';
+                        };
+                        
+                        card.onmouseout = () => {
+                            card.style.transform = 'translateY(0)';
+                            card.style.boxShadow = 'var(--shadow-sm)';
+                        };
+                        
+                        container.appendChild(card);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error loading history:', error);
+                document.getElementById('history-container').style.display = 'none';
+                document.getElementById('history-empty').style.display = 'block';
+            });
+        }
+        
+        function viewResult(resultUrl) {
+            window.open(resultUrl, '_blank');
+        }
+        
+        function deleteHistoryItem(index, event) {
+            event.stopPropagation();
+            
+            if (!confirm('Are you sure you want to delete this history item?')) {
+                return;
+            }
+            
+            console.log('Deleting history item:', index);
+            showNotification('🗑️ Deleting history item...', 'info');
+            
+            fetch('/api/history/delete', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ index: index })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Delete response:', data);
+                
+                if (data.error) {
+                    alert('❌ Error: ' + data.error);
+                } else {
+                    showNotification('✅ History item deleted successfully', 'success');
+                    // Reload history
+                    loadHistory();
+                }
+            })
+            .catch(error => {
+                console.error('Delete error:', error);
+                alert('❌ Error deleting history item: ' + error);
+            });
+        }
+        
+        function clearAllHistory() {
+            if (!confirm('Are you sure you want to clear ALL history? This cannot be undone!')) {
+                return;
+            }
+            
+            console.log('Clearing all history...');
+            showNotification('🗑️ Clearing all history...', 'info');
+            
+            fetch('/api/history/clear', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Clear response:', data);
+                
+                if (data.error) {
+                    alert('❌ Error: ' + data.error);
+                } else {
+                    showNotification('✅ All history cleared successfully', 'success');
+                    // Reload history
+                    loadHistory();
+                }
+            })
+            .catch(error => {
+                console.error('Clear error:', error);
+                alert('❌ Error clearing history: ' + error);
+            });
+        }
+        
+        function selectPerson(person, element) {
+            // Remove previous selection
+            document.querySelectorAll('#person-grid .image-item').forEach(el => {
+                el.classList.remove('selected');
+            });
+            
+            // Select new person
+            element.classList.add('selected');
+            selectedPerson = person;
+            
+            // Update preview
+            document.getElementById('person-preview-placeholder').style.display = 'none';
+            document.getElementById('person-preview').src = `/preview/person/${person}`;
+            document.getElementById('person-preview').style.display = 'block';
+            
+            checkEnableTryOn();
+        }
+        
+        function selectCloth(cloth, element) {
+            // Remove previous selection
+            document.querySelectorAll('#cloth-grid .image-item').forEach(el => {
+                el.classList.remove('selected');
+            });
+            
+            // Select new cloth
+            element.classList.add('selected');
+            selectedCloth = cloth;
+            
+            // Update preview
+            document.getElementById('cloth-preview-placeholder').style.display = 'none';
+            document.getElementById('cloth-preview').src = `/preview/cloth/${cloth}`;
+            document.getElementById('cloth-preview').style.display = 'block';
+            
+            checkEnableTryOn();
+        }
+        
+        function checkEnableTryOn() {
+            const tryonBtn = document.getElementById('tryon-btn');
+            if (selectedPerson && selectedCloth) {
+                tryonBtn.disabled = false;
+            } else {
+                tryonBtn.disabled = true;
+            }
+        }
+        
+        function submitTryOn() {
+            if (!selectedPerson || !selectedCloth) {
+                alert('Please select both a person and clothing item!');
+                return;
+            }
+            
+            console.log('Submitting try-on:', selectedPerson, selectedCloth);
+            
+            // Show loading state
+            const btn = document.getElementById('tryon-btn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span>⏳</span> Generating... Please wait';
+            btn.disabled = true;
+            
+            // Create form data
+            const formData = new FormData();
+            formData.append('person', selectedPerson);
+            formData.append('cloth', selectedCloth);
+            
+            // Submit form
+            fetch('/tryon', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                console.log('Response status:', response.status);
+                console.log('Response redirected:', response.redirected);
+                
+                if (response.redirected) {
+                    window.location.href = response.url;
+                } else if (response.ok) {
+                    return response.text().then(text => {
+                        // Display the result in a new window
+                        const resultWindow = window.open('', '_blank');
+                        if (resultWindow) {
+                            resultWindow.document.write(text);
+                            resultWindow.document.close();
+                        } else {
+                            // Popup blocked, show in current window
+                            document.body.innerHTML = text;
+                        }
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                    });
+                } else {
+                    throw new Error(`Server returned ${response.status}: ${response.statusText}`);
+                }
+            })
+            .catch(error => {
+                console.error('Try-on error:', error);
+                alert('Error generating try-on: ' + error.message);
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            });
+        }
+        
+        function filterImages(type, searchTerm) {
+            const gridId = type === 'person' ? 'person-grid' : 'cloth-grid';
+            const items = document.querySelectorAll(`#${gridId} .image-item`);
+            
+            searchTerm = searchTerm.toLowerCase();
+            
+            items.forEach(item => {
+                const name = item.getAttribute(`data-${type}`).toLowerCase();
+                if (name.includes(searchTerm)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+        
+        function updateStats() {
+            // In a real implementation, this would fetch actual stats from the server
+            document.getElementById('person-count').textContent = '{{ people|length }}';
+            document.getElementById('cloth-count').textContent = '{{ clothes|length }}';
+            document.getElementById('pair-count').textContent = '{{ people|length * clothes|length }}';
+        }
+        
+        // Clear selections
+        function clearAll() {
+            selectedPerson = null;
+            selectedCloth = null;
+            
+            // Reset all image items
+            document.querySelectorAll('.image-item').forEach(el => {
+                el.classList.remove('selected');
+                el.style.display = 'block';
+                el.style.order = '';
+                el.style.opacity = '1';
+                el.style.border = '3px solid transparent';
+            });
+            
+            // Reset previews
+            document.getElementById('person-preview-placeholder').style.display = 'block';
+            document.getElementById('person-preview').style.display = 'none';
+            document.getElementById('cloth-preview-placeholder').style.display = 'block';
+            document.getElementById('cloth-preview').style.display = 'none';
+            
+            checkEnableTryOn();
+            showNotification('🗑️ Cleared all selections and filters', 'info');
+        }
+        
+        // Skin tone filter
+        function filterBySkinTone(tone) {
+            console.log('Filtering by skin tone:', tone);
+            
+            fetch('/api/skin_tone_filter', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({skin_tone: tone})
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Skin tone filter response:', data);
+                
+                if (data.error) {
+                    alert('⚠️ ' + data.error + '\n\nPlease run: python classify_skin_tone.py');
+                } else {
+                    // Filter the person gallery
+                    const personGrid = document.getElementById('person-grid');
+                    const allItems = personGrid.querySelectorAll('.image-item');
+                    
+                    if (tone === 'all') {
+                        // Show all items
+                        allItems.forEach(item => {
+                            item.style.display = 'block';
+                        });
+                    } else {
+                        // Show only matching items
+                        const matchingPeople = data.people;
+                        allItems.forEach(item => {
+                            const personName = item.getAttribute('data-person');
+                            if (matchingPeople.includes(personName)) {
+                                item.style.display = 'block';
+                            } else {
+                                item.style.display = 'none';
+                            }
+                        });
+                    }
+                    
+                    // Show success message
+                    const categoryName = tone === 'all' ? 'All' : tone.charAt(0).toUpperCase() + tone.slice(1);
+                    showNotification(`✅ Filtered: ${data.total} ${categoryName} skin tone people`, 'success');
+                }
+            })
+            .catch(error => {
+                console.error('Skin tone filter error:', error);
+                alert('❌ Error filtering by skin tone: ' + error);
+            });
+        }
+        
+        // Notification system
+        function showNotification(message, type = 'info') {
+            // Remove existing notifications
+            const existing = document.querySelectorAll('.notification');
+            existing.forEach(n => n.remove());
+            
+            // Create notification
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <div style="font-size: 20px;">${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}</div>
+                <div style="flex: 1; font-weight: 500; color: var(--text-primary);">${message}</div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Auto remove after 4 seconds
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 4000);
+        }
+        
+        // AI Feature Functions
+        function autoPair() {
+            console.log('Getting auto pairs...');
+            showNotification('🤖 AI is finding best person-clothing pairs...', 'info');
+            
+            fetch('/api/auto_pair')
+            .then(response => response.json())
+            .then(data => {
+                console.log('Auto pair response:', data);
+                
+                if (data.error) {
+                    alert('❌ Error: ' + data.error);
+                } else {
+                    if (data.pairs && data.pairs.length > 0) {
+                        // Auto-select first pair
+                        const firstPair = data.pairs[0];
+                        
+                        // Select person
+                        const personItem = document.querySelector(`[data-person="${firstPair.person}"]`);
+                        if (personItem) {
+                            selectPerson(firstPair.person, personItem);
+                        }
+                        
+                        // Select cloth
+                        const clothItem = document.querySelector(`[data-cloth="${firstPair.cloth}"]`);
+                        if (clothItem) {
+                            selectCloth(firstPair.cloth, clothItem);
+                        }
+                        
+                        showNotification(`✨ Auto-paired! Found ${data.pairs.length} optimal combinations`, 'success');
+                    } else {
+                        showNotification('⚠️ No valid pairs found. Make sure pose data exists.', 'error');
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Auto pair error:', error);
+                alert('❌ Error getting auto pairs: ' + error);
+            });
+        }
+        
+        function autoPairAndSwitch() {
+            console.log('Auto-pairing and switching to manual tab...');
+            showNotification('🤖 AI is finding the perfect match...', 'info');
+            
+            fetch('/api/auto_pair')
+            .then(response => response.json())
+            .then(data => {
+                console.log('Auto pair response:', data);
+                
+                if (data.error) {
+                    alert('❌ Error: ' + data.error);
+                } else {
+                    if (data.pairs && data.pairs.length > 0) {
+                        // Switch to manual tab first
+                        const manualTabButton = document.querySelector('.tab[onclick*="standard"]');
+                        if (manualTabButton) {
+                            switchTab('standard', manualTabButton);
+                        }
+                        
+                        // Wait a bit for tab to switch, then select items
+                        setTimeout(() => {
+                            const firstPair = data.pairs[0];
+                            
+                            // Select person
+                            const personItem = document.querySelector(`[data-person="${firstPair.person}"]`);
+                            if (personItem) {
+                                selectPerson(firstPair.person, personItem);
+                                personItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            }
+                            
+                            // Select cloth
+                            const clothItem = document.querySelector(`[data-cloth="${firstPair.cloth}"]`);
+                            if (clothItem) {
+                                selectCloth(firstPair.cloth, clothItem);
+                            }
+                            
+                            showNotification(`✨ Perfect match found! Ready to generate try-on`, 'success');
+                        }, 300);
+                    } else {
+                        showNotification('⚠️ No valid pairs found. Make sure pose data exists.', 'error');
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Auto pair error:', error);
+                alert('❌ Error getting auto pairs: ' + error);
+            });
+        }
+        
+        function recommendClothes() {
+            if (!selectedPerson) {
+                alert('⚠️ Please select a person first');
+                return;
+            }
+            
+            console.log('Getting recommendations for:', selectedPerson);
+            showNotification('🤖 AI is analyzing and finding best matches...', 'info');
+            
+            fetch('/api/recommend_clothes', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({person: selectedPerson})
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Recommendations response:', data);
+                
+                if (data.error) {
+                    alert('❌ Error: ' + data.error);
+                } else {
+                    // Highlight recommended clothes in the gallery
+                    const clothGrid = document.getElementById('cloth-grid');
+                    const allItems = clothGrid.querySelectorAll('.image-item');
+                    const recommendations = data.recommendations;
+                    
+                    // Reset all items
+                    allItems.forEach(item => {
+                        item.style.display = 'block';
+                        item.style.order = '999';
+                        item.style.opacity = '0.4';
+                    });
+                    
+                    // Highlight and reorder recommended items
+                    recommendations.forEach((clothName, index) => {
+                        const item = clothGrid.querySelector(`[data-cloth="${clothName}"]`);
+                        if (item) {
+                            item.style.order = index.toString();
+                            item.style.opacity = '1';
+                            item.style.border = '3px solid #10b981';
+                        }
+                    });
+                    
+                    // Scroll to cloth section
+                    clothGrid.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    
+                    showNotification(`✨ Found ${recommendations.length} AI-recommended clothes! (Highlighted in green)`, 'success');
+                }
+            })
+            .catch(error => {
+                console.error('Recommendations error:', error);
+                alert('❌ Error getting recommendations: ' + error);
+            });
+        }
+        
+        function findSimilar(type) {
+            const selectedItem = type === 'person' ? selectedPerson : selectedCloth;
+            if (!selectedItem) {
+                alert(`⚠️ Please select a ${type} first`);
+                return;
+            }
+            
+            console.log('Finding similar items for:', type, selectedItem);
+            showNotification(`🔍 AI is finding similar ${type}s...`, 'info');
+            
+            fetch('/api/similar_items', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({type: type, name: selectedItem})
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Similar items response:', data);
+                
+                if (data.error) {
+                    alert('❌ Error: ' + data.error);
+                } else {
+                    const gridId = type === 'person' ? 'person-grid' : 'cloth-grid';
+                    const grid = document.getElementById(gridId);
+                    const allItems = grid.querySelectorAll('.image-item');
+                    const similarItems = data.similar;
+                    
+                    // Reset all items
+                    allItems.forEach(item => {
+                        item.style.display = 'block';
+                        item.style.order = '999';
+                        item.style.opacity = '0.4';
+                    });
+                    
+                    // Highlight similar items
+                    similarItems.forEach((itemName, index) => {
+                        const attr = type === 'person' ? 'data-person' : 'data-cloth';
+                        const item = grid.querySelector(`[${attr}="${itemName}"]`);
+                        if (item) {
+                            item.style.order = index.toString();
+                            item.style.opacity = '1';
+                            item.style.border = '3px solid #6366f1';
+                        }
+                    });
+                    
+                    // Keep selected item visible
+                    const selectedAttr = type === 'person' ? 'data-person' : 'data-cloth';
+                    const selectedItemEl = grid.querySelector(`[${selectedAttr}="${selectedItem}"]`);
+                    if (selectedItemEl) {
+                        selectedItemEl.style.opacity = '1';
+                        selectedItemEl.style.order = '-1';
+                    }
+                    
+                    grid.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    
+                    showNotification(`✅ Found ${similarItems.length} similar ${type}s! (Highlighted in purple)`, 'success');
+                }
+            })
+            .catch(error => {
+                console.error('Similar items error:', error);
+                alert('❌ Error finding similar items: ' + error);
+            });
+        }
+    </script>
+    
+    <!-- Chatbot -->
+    <div class="chatbot-container">
+        <button class="chatbot-toggle" onclick="toggleChatbot()">
+            <span id="chatbot-icon">💬</span>
+        </button>
+        
+        <div class="chatbot-window" id="chatbot-window">
+            <div class="chatbot-header">
+                <h3>🤖 Virtual Try-On Assistant</h3>
+                <button class="chatbot-close" onclick="toggleChatbot()">×</button>
+            </div>
+            
+            <div class="chatbot-messages" id="chatbot-messages">
+                <div class="message bot">
+                    <div class="bot-name">AI Assistant</div>
+                    👋 Hi! I'm your Virtual Try-On Assistant! I can help you navigate the interface, use AI features, manage your history, and answer any questions about virtual try-on. How can I help you today?
+                    <div class="suggestions">
+                        <button class="suggestion-btn" onclick="sendMessage('How do I try on clothes?')">How to try on clothes?</button>
+                        <button class="suggestion-btn" onclick="sendMessage('Show me AI features')">AI Features</button>
+                        <button class="suggestion-btn" onclick="sendMessage('Help with navigation')">Navigation Help</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chatbot-input-area">
+                <div class="chatbot-input-container">
+                    <textarea 
+                        class="chatbot-input" 
+                        id="chatbot-input" 
+                        placeholder="Ask me anything about virtual try-on..."
+                        rows="1"
+                        onkeypress="handleChatbotKeypress(event)"
+                        oninput="adjustTextareaHeight(this)"
+                    ></textarea>
+                    <button class="chatbot-send" id="chatbot-send" onclick="sendChatbotMessage()">
+                        ➤
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let chatbotOpen = false;
+        
+        function toggleChatbot() {
+            const window = document.getElementById('chatbot-window');
+            const icon = document.getElementById('chatbot-icon');
+            
+            chatbotOpen = !chatbotOpen;
+            
+            if (chatbotOpen) {
+                window.style.display = 'flex';
+                icon.textContent = '×';
+                // Focus input when opened
+                setTimeout(() => {
+                    document.getElementById('chatbot-input').focus();
+                }, 100);
+            } else {
+                window.style.display = 'none';
+                icon.textContent = '💬';
+            }
+        }
+        
+        function handleChatbotKeypress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendChatbotMessage();
+            }
+        }
+        
+        function adjustTextareaHeight(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.min(textarea.scrollHeight, 80) + 'px';
+        }
+        
+        function sendMessage(message) {
+            document.getElementById('chatbot-input').value = message;
+            sendChatbotMessage();
+        }
+        
+        function sendChatbotMessage() {
+            const input = document.getElementById('chatbot-input');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // Add user message
+            addChatMessage(message, 'user');
+            
+            // Clear input
+            input.value = '';
+            input.style.height = 'auto';
+            
+            // Show typing indicator
+            showTypingIndicator();
+            
+            // Send to backend
+            fetch('/api/chatbot', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message: message })
+            })
+            .then(response => response.json())
+            .then(data => {
+                hideTypingIndicator();
+                
+                if (data.error) {
+                    addChatMessage('Sorry, I encountered an error. Please try again.', 'bot');
+                } else {
+                    addChatMessage(data.response, 'bot', data.suggestions, data.actions);
+                    
+                    // Execute actions if any
+                    if (data.actions) {
+                        executeActions(data.actions);
+                    }
+                }
+            })
+            .catch(error => {
+                hideTypingIndicator();
+                console.error('Chatbot error:', error);
+                addChatMessage('Sorry, I\'m having trouble connecting. Please try again.', 'bot');
+            });
+        }
+        
+        function addChatMessage(message, sender, suggestions = [], actions = []) {
+            const messagesContainer = document.getElementById('chatbot-messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            
+            if (sender === 'bot') {
+                let content = `<div class="bot-name">AI Assistant</div>${message.replace(/\n/g, '<br>')}`;
+                
+                if (suggestions && suggestions.length > 0) {
+                    content += '<div class="suggestions">';
+                    suggestions.forEach(suggestion => {
+                        content += `<button class="suggestion-btn" onclick="sendMessage('${suggestion.replace(/'/g, "\\'")}')">${suggestion}</button>`;
+                    });
+                    content += '</div>';
+                }
+                
+                messageDiv.innerHTML = content;
+            } else {
+                messageDiv.textContent = message;
+            }
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        
+        function showTypingIndicator() {
+            const messagesContainer = document.getElementById('chatbot-messages');
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'typing-indicator';
+            typingDiv.id = 'typing-indicator';
+            typingDiv.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
+            
+            messagesContainer.appendChild(typingDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        
+        function hideTypingIndicator() {
+            const typingIndicator = document.getElementById('typing-indicator');
+            if (typingIndicator) {
+                typingIndicator.remove();
+            }
+        }
+        
+        function executeActions(actions) {
+            actions.forEach(action => {
+                switch(action) {
+                    case 'highlight_galleries':
+                        // Highlight the galleries briefly
+                        document.querySelectorAll('.gallery').forEach(gallery => {
+                            gallery.style.border = '3px solid #10b981';
+                            setTimeout(() => {
+                                gallery.style.border = '2px solid var(--border-color)';
+                            }, 3000);
+                        });
+                        break;
+                        
+                    case 'highlight_ai_panel':
+                        // Highlight AI panel
+                        document.querySelector('.ai-panel').style.border = '3px solid #10b981';
+                        setTimeout(() => {
+                            document.querySelector('.ai-panel').style.border = '2px solid #e8eaf6';
+                        }, 3000);
+                        break;
+                        
+                    case 'highlight_skin_tone':
+                        // Highlight skin tone panel
+                        document.querySelector('.skin-tone-panel').style.border = '3px solid #10b981';
+                        setTimeout(() => {
+                            document.querySelector('.skin-tone-panel').style.border = '2px solid #fef3c7';
+                        }, 3000);
+                        break;
+                        
+                    case 'switch_to_history':
+                        // Switch to history tab
+                        const historyTab = document.querySelector('.tab[onclick*="history"]');
+                        if (historyTab) {
+                            switchTab('history', historyTab);
+                        }
+                        break;
+                        
+                    case 'switch_to_ar':
+                        // Switch to AR tab
+                        const arTab = document.querySelector('.tab[onclick*="ar"]');
+                        if (arTab) {
+                            switchTab('ar', arTab);
+                        }
+                        break;
+                        
+                    case 'switch_to_add':
+                        // Switch to add clothing tab
+                        const addTab = document.querySelector('.tab[onclick*="add"]');
+                        if (addTab) {
+                            switchTab('add', addTab);
+                        }
+                        break;
+                        
+                    case 'auto_pair':
+                        // Trigger auto pair
+                        autoPairAndSwitch();
+                        break;
+                        
+                    case 'fetch_stats':
+                        // Fetch and display stats
+                        fetchChatbotStats();
+                        break;
+                        
+                    case 'shopping_mode':
+                        // Enable shopping mode
+                        showNotification('🛍️ Shopping mode activated! Ask me to search for any item.', 'info');
+                        break;
+                        
+                    case 'fetch_trending':
+                        // Fetch trending items
+                        fetchTrendingItems();
+                        break;
+                        
+                    case 'search_shopping':
+                        // Search for shopping items
+                        if (actions.length > 1) {
+                            searchShoppingItems(actions[1]);
+                        }
+                        break;
+                }
+            });
+        }
+        
+        function fetchChatbotStats() {
+            fetch('/api/chatbot/stats')
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    addChatMessage('Sorry, I couldn\'t fetch the statistics right now.', 'bot');
+                } else {
+                    let statsMessage = `📊 **Current Statistics:**\n\n`;
+                    statsMessage += `👥 **People:** ${data.total_people}\n`;
+                    statsMessage += `👕 **Clothing Items:** ${data.total_clothes}\n`;
+                    statsMessage += `🔢 **Possible Combinations:** ${data.total_combinations.toLocaleString()}\n`;
+                    statsMessage += `📜 **Your History:** ${data.history_count} try-ons\n`;
+                    
+                    if (data.skin_tone_available) {
+                        statsMessage += `\n🎨 **Skin Tone Distribution:**\n`;
+                        Object.entries(data.skin_tone_stats).forEach(([tone, count]) => {
+                            const emoji = {
+                                'light': '☀️',
+                                'intermediate': '🌤️', 
+                                'tan': '🌅',
+                                'brown': '🌰',
+                                'dark': '🌑'
+                            }[tone] || '👤';
+                            statsMessage += `${emoji} ${tone.charAt(0).toUpperCase() + tone.slice(1)}: ${count}\n`;
+                        });
+                    }
+                    
+                    addChatMessage(statsMessage, 'bot', [
+                        'Show my personal history',
+                        'Try a random combination',
+                        'Use AI recommendations'
+                    ]);
+                }
+            })
+            .catch(error => {
+                console.error('Stats error:', error);
+                addChatMessage('Sorry, I couldn\'t fetch the statistics right now.', 'bot');
+            });
+        }
+        
+        function fetchTrendingItems() {
+            fetch('/api/shopping/trending')
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    addChatMessage('Sorry, I couldn\'t fetch trending items right now.', 'bot');
+                } else {
+                    addChatMessage(data.trending, 'bot', [
+                        'Search for oversized t-shirt',
+                        'Find crop tops',
+                        'Show maxi dresses',
+                        'Search for blazers'
+                    ]);
+                }
+            })
+            .catch(error => {
+                console.error('Trending error:', error);
+                addChatMessage('Sorry, I couldn\'t fetch trending items right now.', 'bot');
+            });
+        }
+        
+        function searchShoppingItems(query) {
+            showNotification(`🔍 Searching for ${query}s on Myntra & Ajio...`, 'info');
+            
+            fetch('/api/shopping/search', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ 
+                    query: query,
+                    category: 'clothing',
+                    max_results: 6
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    addChatMessage('Sorry, I couldn\'t search for items right now.', 'bot');
+                } else {
+                    const results = data.results;
+                    let message = `🛍️ **Found ${results.summary.total_items} ${query} items!**\n\n`;
+                    
+                    if (results.summary.price_range.min > 0) {
+                        message += `💰 **Price Range:** ₹${results.summary.price_range.min.toLocaleString()} - ₹${results.summary.price_range.max.toLocaleString()}\n\n`;
+                    }
+                    
+                    // Show Myntra items
+                    if (results.myntra.length > 0) {
+                        message += `🏪 **Myntra (${results.myntra.length} items):**\n`;
+                        results.myntra.slice(0, 3).forEach(item => {
+                            const discount = item.discount ? ` (${item.discount}% off)` : '';
+                            const rating = item.rating ? ` ⭐${item.rating}` : '';
+                            message += `• **${item.name}** by ${item.brand}\n`;
+                            message += `  ₹${item.price.toLocaleString()}${discount}${rating}\n`;
+                            message += `  [View on Myntra](${item.url})\n\n`;
+                        });
+                    }
+                    
+                    // Show Ajio items
+                    if (results.ajio.length > 0) {
+                        message += `🏪 **Ajio (${results.ajio.length} items):**\n`;
+                        results.ajio.slice(0, 3).forEach(item => {
+                            const discount = item.discount ? ` (${item.discount}% off)` : '';
+                            const rating = item.rating ? ` ⭐${item.rating}` : '';
+                            message += `• **${item.name}** by ${item.brand}\n`;
+                            message += `  ₹${item.price.toLocaleString()}${discount}${rating}\n`;
+                            message += `  [View on Ajio](${item.url})\n\n`;
+                        });
+                    }
+                    
+                    addChatMessage(message, 'bot', [
+                        `Compare ${query} prices`,
+                        'Show more options',
+                        'Find similar items',
+                        'Try virtual try-on'
+                    ]);
+                }
+            })
+            .catch(error => {
+                console.error('Shopping search error:', error);
+                addChatMessage('Sorry, I couldn\'t search for items right now.', 'bot');
+            });
+        }
+        
+        function compareItemPrices(itemName) {
+            fetch('/api/shopping/compare', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ item_name: itemName })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    addChatMessage('Sorry, I couldn\'t compare prices right now.', 'bot');
+                } else {
+                    addChatMessage(data.comparison, 'bot', [
+                        'Search for more items',
+                        'Show trending fashion',
+                        'Try virtual try-on',
+                        'Find best deals'
+                    ]);
+                }
+            })
+            .catch(error => {
+                console.error('Price comparison error:', error);
+                addChatMessage('Sorry, I couldn\'t compare prices right now.', 'bot');
+            });
+        }
     </script>
 </body>
 </html>

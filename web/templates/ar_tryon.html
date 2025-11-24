@@ -95,13 +95,20 @@
             border-radius: 12px;
             overflow: hidden;
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            width: 100%;
+            height: 0;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
         }
         
         #videoElement {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
-            height: auto;
+            height: 100%;
             display: block;
             transform: scaleX(-1);
+            object-fit: cover;
         }
         
         #canvas {
@@ -111,6 +118,7 @@
             width: 100%;
             height: 100%;
             transform: scaleX(-1);
+            pointer-events: none; /* Ensure canvas doesn't interfere with video controls */
         }
         
         .video-overlay {
@@ -359,6 +367,31 @@
                 grid-template-columns: repeat(4, 1fr);
             }
         }
+        
+        @media (max-width: 768px) {
+            .cloth-selector {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .header h1 {
+                font-size: 24px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .cloth-selector {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .header h1 {
+                font-size: 20px;
+            }
+            
+            .ar-btn {
+                padding: 10px 15px;
+                font-size: 14px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -390,6 +423,7 @@
                     <li>Fine-tune with sliders if needed</li>
                     <li>Click "Capture Photo" to save your try-on</li>
                 </ol>
+                <p style="margin-top: 10px;"><strong>✨ Enhanced Features:</strong> Improved pose estimation, better clothing alignment, and real-time color matching</p>
             </div>
             
             <div class="ar-layout">
@@ -425,6 +459,10 @@
                             <button class="ar-btn" onclick="applyShirtPreset()" 
                                     style="background: #10b981; color: white; font-size: 13px; padding: 8px;">
                                 👔 Men's Shirt Preset
+                            </button>
+                            <button class="ar-btn" onclick="applyEnhancedAlignment()" 
+                                    style="background: #8b5cf6; color: white; font-size: 13px; padding: 8px; margin-left: 5px;">
+                                🎯 Enhanced Alignment
                             </button>
                         </div>
                         
@@ -560,7 +598,8 @@
                 enableSegmentation: false,
                 smoothSegmentation: false,
                 minDetectionConfidence: 0.5,
-                minTrackingConfidence: 0.5
+                minTrackingConfidence: 0.5,
+                selfieMode: true // Enable selfie mode for better mirroring
             });
             
             pose.onResults(onPoseResults);
@@ -571,14 +610,21 @@
                 const stream = await navigator.mediaDevices.getUserMedia({
                     video: {
                         width: { ideal: 1280 },
-                        height: { ideal: 720 }
+                        height: { ideal: 720 },
+                        facingMode: "user" // Prefer front camera
                     }
                 });
                 
                 video.srcObject = stream;
                 video.onloadedmetadata = () => {
-                    canvas.width = video.videoWidth;
-                    canvas.height = video.videoHeight;
+                    // Update canvas dimensions to match video container
+                    const container = video.parentElement;
+                    canvas.width = container.clientWidth;
+                    canvas.height = container.clientHeight;
+                    
+                    // Also update the video element dimensions
+                    video.width = container.clientWidth;
+                    video.height = container.clientHeight;
                 };
                 
                 isRunning = true;
@@ -612,6 +658,41 @@
             
             ctx.clearRect(0, 0, canvas.width, canvas.height);
         }
+        
+        // Handle window resize
+        let resizeTimeout;
+        function handleResize() {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                if (video && video.srcObject) {
+                    // Update canvas dimensions to match video container
+                    const container = video.parentElement;
+                    canvas.width = container.clientWidth;
+                    canvas.height = container.clientHeight;
+                    
+                    // Also update the video element dimensions
+                    video.width = container.clientWidth;
+                    video.height = container.clientHeight;
+                    
+                    // Force a redraw if we have keypoints and a selected cloth
+                    if (currentKeypoints && selectedCloth) {
+                        drawClothOverlay(currentKeypoints);
+                        if (settings.showKeypoints) {
+                            drawSkeleton(currentKeypoints);
+                        }
+                    }
+                }
+            }, 100); // Debounce resize events
+        }
+        
+        // Add resize event listener
+        window.addEventListener('resize', handleResize);
+        
+        // Handle fullscreen changes
+        document.addEventListener('fullscreenchange', handleResize);
+        document.addEventListener('webkitfullscreenchange', handleResize);
+        document.addEventListener('mozfullscreenchange', handleResize);
+        document.addEventListener('MSFullscreenChange', handleResize);
 
         async function detectPose() {
             if (!isRunning) return;
@@ -667,7 +748,7 @@
                 return;
             }
             
-            // Convert to pixel coordinates
+            // Convert to pixel coordinates using actual canvas dimensions
             const leftShoulderX = leftShoulder.x * canvas.width;
             const leftShoulderY = leftShoulder.y * canvas.height;
             const rightShoulderX = rightShoulder.x * canvas.width;
@@ -677,25 +758,24 @@
             const rightHipX = rightHip.x * canvas.width;
             const rightHipY = rightHip.y * canvas.height;
             
+            // Enhanced calculation for better shirt positioning
             // Calculate centers
             const shoulderCenterX = (leftShoulderX + rightShoulderX) / 2;
             const shoulderCenterY = (leftShoulderY + rightShoulderY) / 2;
             const hipCenterX = (leftHipX + rightHipX) / 2;
             const hipCenterY = (leftHipY + rightHipY) / 2;
             
-            // SIMPLIFIED: Calculate shirt dimensions
-            // Width: shoulder span + extra for sleeves
-            const shoulderSpan = Math.abs(rightShoulderX - leftShoulderX);
-            const shirtWidth = shoulderSpan * 2.0 * settings.scale; // 2.0x for full coverage including sleeves
-            
-            // Height: from above shoulders to below hips
+            // Enhanced: Calculate shoulder width and body height
+            const shoulderWidth = Math.abs(rightShoulderX - leftShoulderX);
             const bodyHeight = hipCenterY - shoulderCenterY;
-            const shirtHeight = bodyHeight * 1.8 * settings.scale; // 1.8x for full torso coverage
             
-            // CRITICAL FIX: Position shirt TOP ABOVE shoulders (for collar/neck area)
-            // The clothing should START above shoulder center to show collar properly
+            // Enhanced: Calculate shirt dimensions with better proportions
+            const shirtWidth = shoulderWidth * 2.2 * settings.scale; // Increased coverage
+            const shirtHeight = bodyHeight * 2.0 * settings.scale; // Extended to cover more torso
+            
+            // Enhanced: Position shirt with better alignment
             const shirtX = shoulderCenterX - (shirtWidth / 2) + settings.horizontalOffset;
-            const shirtY = shoulderCenterY - (shirtHeight * 0.35) + settings.verticalOffset; // Start 35% above shoulder center
+            const shirtY = shoulderCenterY - (shirtHeight * 0.4) + settings.verticalOffset; // Better collar positioning
             
             // Clamp to canvas boundaries
             const finalX = Math.max(0, Math.min(shirtX, canvas.width - 10));
@@ -705,7 +785,7 @@
             
             console.log(`Drawing cloth at (${Math.round(finalX)}, ${Math.round(finalY)}), size: ${Math.round(finalWidth)}x${Math.round(finalHeight)}`);
             
-            // Debug: Draw positioning info
+            // Enhanced: Draw positioning info
             if (settings.showKeypoints) {
                 ctx.save();
                 ctx.strokeStyle = '#FFFF00';
@@ -1009,6 +1089,33 @@
             }, 3000);
         }
         
+        function applyEnhancedAlignment() {
+            // Enhanced alignment settings
+            settings.opacity = 0.8;         // Good visibility
+            settings.scale = 1.0;           // Normal size
+            settings.verticalOffset = -20;   // Move UP slightly for shoulder alignment
+            settings.horizontalOffset = 0;   // Centered
+            
+            document.getElementById('opacitySlider').value = 80;
+            document.getElementById('opacityValue').textContent = '80%';
+            document.getElementById('scaleSlider').value = 100;
+            document.getElementById('scaleValue').textContent = '100%';
+            document.getElementById('verticalSlider').value = -20;
+            document.getElementById('verticalValue').textContent = '-20';
+            document.getElementById('horizontalSlider').value = 0;
+            document.getElementById('horizontalValue').textContent = '0';
+            
+            // Show feedback
+            updateStatus('Enhanced alignment applied - fine-tune as needed!', true);
+            setTimeout(() => {
+                if (selectedCloth) {
+                    updateStatus(`Trying: ${selectedCloth}`, true);
+                } else {
+                    updateStatus('Camera Active', true);
+                }
+            }, 3000);
+        }
+        
         // Quick adjustment functions
         function moveClothingUp() {
             const currentValue = parseInt(document.getElementById('verticalSlider').value);
@@ -1070,15 +1177,16 @@
 
         async function captureFrame() {
             // Create a temporary canvas for capture
+            const container = video.parentElement;
             const captureCanvas = document.createElement('canvas');
-            captureCanvas.width = canvas.width;
-            captureCanvas.height = canvas.height;
+            captureCanvas.width = container.clientWidth;
+            captureCanvas.height = container.clientHeight;
             const captureCtx = captureCanvas.getContext('2d');
             
             // Draw video frame
             captureCtx.save();
             captureCtx.scale(-1, 1);
-            captureCtx.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
+            captureCtx.drawImage(video, -container.clientWidth, 0, container.clientWidth, container.clientHeight);
             captureCtx.restore();
             
             // Draw overlay

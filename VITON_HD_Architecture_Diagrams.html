@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VITON-HD System Architecture & Schema Diagrams</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        // Fallback if CDN fails
+        if (typeof mermaid === 'undefined') {
+            document.write('<script src="https://unpkg.com/mermaid@10/dist/mermaid.min.js"><\/script>');
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+        
+        .diagram-section {
+            margin: 40px 0;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 5px solid #667eea;
+        }
+        
+        .diagram-section h2 {
+            color: #34495e;
+            margin-top: 0;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+        }
+        
+        .diagram-section p {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .mermaid {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .download-section {
+            text-align: center;
+            margin: 40px 0;
+            padding: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            color: white;
+        }
+        
+        .download-section h3 {
+            margin-top: 0;
+            font-size: 1.5em;
+        }
+        
+        .btn-container {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        
+        .download-btn {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            background: #f0f0f0;
+        }
+        
+        .download-btn:active {
+            transform: translateY(0);
+        }
+        
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .info-box strong {
+            color: #1976D2;
+        }
+        
+        .toc {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 20px;
+            margin: 30px 0;
+            border-radius: 5px;
+        }
+        
+        .toc h3 {
+            margin-top: 0;
+            color: #856404;
+        }
+        
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .toc li {
+            padding: 8px 0;
+        }
+        
+        .toc a {
+            color: #856404;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .toc a:hover {
+            text-decoration: underline;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 2px solid #eee;
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 VITON-HD System Architecture & Schema Diagrams</h1>
+        <p class="subtitle">Comprehensive Visual Documentation of Virtual Try-On System</p>
+        
+        <div class="download-section">
+            <h3>📥 Download Options</h3>
+            <p>Save these diagrams for your documentation or presentations</p>
+            <div class="btn-container">
+                <button class="download-btn" onclick="downloadAllAsPNG()">💾 Download All as PNG</button>
+                <button class="download-btn" onclick="downloadAsHTML()">📄 Download This Page (HTML)</button>
+                <button class="download-btn" onclick="window.print()">🖨️ Print / Save as PDF</button>
+                <button class="download-btn" onclick="copyMermaidCode()">📋 Copy Mermaid Code</button>
+            </div>
+        </div>
+        
+        <div class="toc">
+            <h3>📑 Table of Contents</h3>
+            <ul>
+                <li><a href="#system-overview">1. System Overview Architecture</a></li>
+                <li><a href="#layered-architecture">2. Layered System Architecture</a></li>
+                <li><a href="#inference-flow">3. Inference Flow Diagram</a></li>
+                <li><a href="#network-architecture">4. Network Architecture</a></li>
+                <li><a href="#dataset-schema">5. Dataset Structure Schema</a></li>
+                <li><a href="#model-io-schema">6. Model Input/Output Schema</a></li>
+                <li><a href="#semantic-schema">7. Semantic Segmentation Schema</a></li>
+                <li><a href="#tensor-flow">8. Tensor Shape Flow</a></li>
+                <li><a href="#sequence-diagram">9. System Interaction Sequence</a></li>
+            </ul>
+        </div>
+        
+        <div class="info-box">
+            <strong>ℹ️ About VITON-HD:</strong> Virtual Try-On in High Definition - A state-of-the-art deep learning system 
+            for realistic clothing try-on using a three-stage neural network pipeline: Segmentation, Geometric Matching, and Try-On Synthesis.
+        </div>
+
+        <!-- Diagram 1: System Overview -->
+        <div class="diagram-section" id="system-overview">
+            <h2>1. System Overview Architecture</h2>
+            <p>Complete system architecture showing all layers from web interface to storage, including AI features and external services.</p>
+            <div class="mermaid" id="diagram1">
+graph TB
+    subgraph Presentation Layer
+        Web[Web Application Layer]
+        WebUI[Flask Web UI - app.py]
+        API[REST API Endpoints]
+        Templates[HTML Templates]
+        
+        Web --> WebUI
+        Web --> API
+        Web --> Templates
+    end
+    
+    subgraph Application Layer
+        Controller[Request Controller]
+        AIEngine[AI Recommendation Engine]
+        SkinTone[Skin Tone Classifier]
+        ARProcessor[AR Live Try-On Processor]
+        ImgUpload[Image Upload Handler]
+        
+        Controller --> AIEngine
+        Controller --> SkinTone
+        Controller --> ARProcessor
+        Controller --> ImgUpload
+    end
+    
+    subgraph Business Logic Layer
+        Orchestrator[Try-On Orchestrator]
+        DataLoader[VITON DataLoader]
+        Preprocessor[Data Preprocessor]
+        PostProcessor[Result Post-Processor]
+        
+        Orchestrator --> DataLoader
+        Orchestrator --> Preprocessor
+        Orchestrator --> PostProcessor
+    end
+    
+    subgraph Model Layer
+        Stage1[Stage 1: Segmentation]
+        Stage2[Stage 2: Geometric Matching]
+        Stage3[Stage 3: Try-On Synthesis]
+        
+        SegGen[SegGenerator U-Net]
+        GMM[GMM Module]
+        ALIAS[ALIAS Generator]
+        
+        Stage1 --> SegGen
+        Stage2 --> GMM
+        Stage3 --> ALIAS
+    end
+    
+    subgraph Data Access Layer
+        Dataset[VITONDataset Class]
+        FileManager[File System Manager]
+        CacheManager[AI Feature Cache]
+        
+        Dataset --> FileManager
+        Dataset --> CacheManager
+    end
+    
+    subgraph Storage Layer
+        PersonDB[(Person Images)]
+        ClothDB[(Cloth Images)]
+        MaskDB[(Cloth Masks)]
+        PoseDB[(Pose Data)]
+        ParseDB[(Segmentation Maps)]
+        ModelDB[(Model Checkpoints)]
+        ResultDB[(Generated Results)]
+    end
+    
+    WebUI --> Controller
+    API --> Controller
+    Controller --> Orchestrator
+    Orchestrator --> Stage1
+    Stage1 --> Stage2
+    Stage2 --> Stage3
+    DataLoader --> Dataset
+    Dataset --> PersonDB
+    Dataset --> ClothDB
+    Dataset --> MaskDB
+    Dataset --> PoseDB
+    Dataset --> ParseDB
+    SegGen --> ModelDB
+    GMM --> ModelDB
+    ALIAS --> ModelDB
+    PostProcessor --> ResultDB
+            </div>
+        </div>
+
+        <!-- Diagram 2: Inference Flow -->
+        <div class="diagram-section" id="inference-flow">
+            <h2>2. Inference Flow Diagram</h2>
+            <p>Step-by-step flow of data through the three-stage neural network pipeline during virtual try-on inference.</p>
+            <div class="mermaid" id="diagram2">
+graph TB
+    Start[Start Virtual Try-On]
+    LoadInput[Load Person & Cloth Images]
+    LoadPose[Load Pose Keypoints]
+    LoadParse[Load Parsing Map]
+    
+    subgraph Stage 1: Segmentation Generation
+        GenAgnostic[Generate Agnostic Representations]
+        DownsampleSeg[Downsample to 256x192]
+        ConcatSeg[Concatenate Inputs 21 channels]
+        SegModel[Segmentation Generator Network]
+        UpsampleSeg[Upsample & Gaussian Blur]
+        ParsePred[Predicted Parsing Map 13 classes]
+    end
+    
+    subgraph Stage 2: Geometric Matching
+        DownsampleGMM[Downsample to 256x192]
+        ExtractFeat[Extract Features Person & Cloth]
+        ComputeCorr[Compute Feature Correlation]
+        RegTheta[Regress TPS Parameters]
+        GenGrid[Generate Warping Grid]
+        WarpCloth[Warp Cloth using Grid Sample]
+    end
+    
+    subgraph Stage 3: Try-On Synthesis
+        CalcMisalign[Calculate Misalignment Mask]
+        GenParseSeg[Generate Parse & Parse_div]
+        ConcatInputs[Concatenate Agnostic Pose Warped]
+        ALIASGen[ALIAS Generator]
+        ApplyNorm[Apply ALIAS Normalization]
+        GenResult[Generate Final Result]
+    end
+    
+    Output[Save Output Image]
+    End[End]
+    
+    Start --> LoadInput
+    LoadInput --> LoadPose
+    LoadPose --> LoadParse
+    LoadParse --> GenAgnostic
+    GenAgnostic --> DownsampleSeg
+    DownsampleSeg --> ConcatSeg
+    ConcatSeg --> SegModel
+    SegModel --> UpsampleSeg
+    UpsampleSeg --> ParsePred
+    ParsePred --> DownsampleGMM
+    DownsampleGMM --> ExtractFeat
+    ExtractFeat --> ComputeCorr
+    ComputeCorr --> RegTheta
+    RegTheta --> GenGrid
+    GenGrid --> WarpCloth
+    WarpCloth --> CalcMisalign
+    CalcMisalign --> GenParseSeg
+    GenParseSeg --> ConcatInputs
+    ConcatInputs --> ALIASGen
+    ALIASGen --> ApplyNorm
+    ApplyNorm --> GenResult
+    GenResult --> Output
+    Output --> End
+            </div>
+        </div>
+
+        <!-- Diagram 3: Network Architecture -->
+        <div class="diagram-section" id="network-architecture">
+            <h2>3. Network Architecture Details</h2>
+            <p>Detailed architecture of the three main neural networks: SegGenerator (U-Net), GMM (Geometric Matching), and ALIAS Generator.</p>
+            <div class="mermaid" id="diagram3">
+graph TB
+    subgraph SegGenerator U-Net
+        SegIn[Input 21 channels]
+        Conv1[Conv1 64 channels]
+        Conv2[Conv2 128 channels]
+        Conv3[Conv3 256 channels]
+        Conv4[Conv4 512 channels]
+        Conv5[Conv5 1024 channels]
+        Up6[Up6 512 channels + Skip]
+        Up7[Up7 256 channels + Skip]
+        Up8[Up8 128 channels + Skip]
+        Up9[Up9 64 channels + Skip]
+        SegOut[Output 13 channels]
+    end
+    
+    subgraph GMM Module
+        GMMInA[Person Features 7ch]
+        GMMInB[Cloth Features 3ch]
+        FeatExtA[Feature Extraction A]
+        FeatExtB[Feature Extraction B]
+        Corr[Feature Correlation BMM]
+        Reg[Feature Regression]
+        TPSGrid[TPS Grid Generator 5x5]
+        GMMOut[Warped Grid Output]
+    end
+    
+    subgraph ALIAS Generator
+        AliasIn[Input 9 channels]
+        Head[Head Block 1024]
+        Middle0[Middle Block 0]
+        Middle1[Middle Block 1]
+        AUp0[Up Block 0 512]
+        AUp1[Up Block 1 256]
+        AUp2[Up Block 2 128]
+        AUp3[Up Block 3 64]
+        AliasOut[Output 3 RGB]
+    end
+    
+    SegIn --> Conv1
+    Conv1 --> Conv2
+    Conv2 --> Conv3
+    Conv3 --> Conv4
+    Conv4 --> Conv5
+    Conv5 --> Up6
+    Up6 --> Up7
+    Up7 --> Up8
+    Up8 --> Up9
+    Up9 --> SegOut
+    
+    GMMInA --> FeatExtA
+    GMMInB --> FeatExtB
+    FeatExtA --> Corr
+    FeatExtB --> Corr
+    Corr --> Reg
+    Reg --> TPSGrid
+    TPSGrid --> GMMOut
+    
+    AliasIn --> Head
+    Head --> Middle0
+    Middle0 --> Middle1
+    Middle1 --> AUp0
+    AUp0 --> AUp1
+    AUp1 --> AUp2
+    AUp2 --> AUp3
+    AUp3 --> AliasOut
+            </div>
+        </div>
+
+        <!-- Diagram 4: Dataset Schema -->
+        <div class="diagram-section" id="dataset-schema">
+            <h2>4. Dataset Structure Schema</h2>
+            <p>File organization and data format specifications for the VITON-HD dataset.</p>
+            <div class="mermaid" id="diagram4">
+graph TB
+    Root[Dataset Root]
+    TestDir[test/]
+    TrainDir[train/]
+    
+    Root --> TestDir
+    Root --> TrainDir
+    
+    TestDir --> Images[image/ - Person RGB 1024x768]
+    TestDir --> Cloth[cloth/ - Clothing RGB 1024x768]
+    TestDir --> ClothMask[cloth-mask/ - Binary Masks]
+    TestDir --> ParseImg[image-parse/ - 20 classes PNG]
+    TestDir --> PoseImg[openpose-img/ - Pose Visualization]
+    TestDir --> PoseJSON[openpose-json/ - Keypoints JSON]
+    TestDir --> Pairs[test_pairs.txt - Person Cloth Pairs]
+    
+    Images --> ImgFile[person_id.jpg]
+    Cloth --> ClothFile[cloth_id.jpg]
+    ClothMask --> MaskFile[cloth_id.jpg Grayscale]
+    ParseImg --> ParseFile[person_id.png 20 semantic classes]
+    PoseImg --> PoseImgFile[person_id_rendered.png]
+    PoseJSON --> JSONFile[person_id_keypoints.json pose_keypoints_2d array]
+    Pairs --> PairFile[person_id cloth_id one per line]
+            </div>
+        </div>
+
+        <!-- Diagram 5: Model I/O Schema -->
+        <div class="diagram-section" id="model-io-schema">
+            <h2>5. Model Input/Output Schema</h2>
+            <p>Tensor shapes and channel specifications for each neural network module.</p>
+            <div class="mermaid" id="diagram5">
+graph LR
+    subgraph SegGenerator Schema
+        SegInput[Input B,21,256,192]
+        SegOutput[Output B,13,1024,768]
+        SegInput --> SegNet[Segmentation Network]
+        SegNet --> SegOutput
+    end
+    
+    subgraph GMM Schema
+        GMMInputA[Input A B,7,256,192]
+        GMMInputB[Input B B,3,256,192]
+        GMMOutput[theta B,50 warped_grid B,H,W,2]
+        GMMInputA --> GMMNet[GMM Network]
+        GMMInputB --> GMMNet
+        GMMNet --> GMMOutput
+    end
+    
+    subgraph ALIAS Schema
+        AliasInput[Input B,9,1024,768]
+        AliasSeg[Seg B,7,1024,768]
+        AliasSegDiv[SegDiv B,8,1024,768]
+        AliasMask[Mask B,1,1024,768]
+        AliasOutput[Output B,3,1024,768]
+        AliasInput --> AliasNet[ALIAS Network]
+        AliasSeg --> AliasNet
+        AliasSegDiv --> AliasNet
+        AliasMask --> AliasNet
+        AliasNet --> AliasOutput
+    end
+            </div>
+        </div>
+
+        <!-- Diagram 6: Semantic Segmentation Schema -->
+        <div class="diagram-section" id="semantic-schema">
+            <h2>6. Semantic Segmentation Class Schema</h2>
+            <p>Mapping between different segmentation class representations used in the pipeline.</p>
+            <div class="mermaid" id="diagram6">
+graph TB
+    subgraph Original 20 Classes
+        C0[0 Background]
+        C1[1 Hair]
+        C2[2 Face]
+        C3[3 Neck]
+        C4[4 Head]
+        C5[5 Upper-clothes]
+        C6[6 Left-arm]
+        C7[7 Right-arm]
+        C8[8 Socks]
+        C9[9 Pants]
+        C10[10 Torso-skin]
+    end
+    
+    subgraph Agnostic 13 Classes
+        A0[0 Background]
+        A1[1 Hair]
+        A2[2 Face]
+        A3[3 Upper-clothes]
+        A4[4 Bottom]
+        A5[5 Left-arm]
+        A6[6 Right-arm]
+    end
+    
+    subgraph Final 7 Classes
+        F0[0 Background]
+        F1[1 Paste regions]
+        F2[2 Upper-clothes]
+        F3[3 Hair]
+        F4[4 Left-arm]
+        F5[5 Right-arm]
+        F6[6 Noise]
+    end
+    
+    C0 --> A0
+    C3 --> A0
+    C10 --> A0
+    C1 --> A1
+    C2 --> A2
+    C5 --> A3
+    C9 --> A4
+    C6 --> A5
+    C7 --> A6
+    
+    A0 --> F0
+    A1 --> F3
+    A3 --> F2
+    A4 --> F1
+    A5 --> F4
+    A6 --> F5
+            </div>
+        </div>
+
+        <!-- Diagram 7: Tensor Flow -->
+        <div class="diagram-section" id="tensor-flow">
+            <h2>7. Tensor Shape Flow Through Pipeline</h2>
+            <p>Transformation of tensor shapes as data flows through the three-stage pipeline.</p>
+            <div class="mermaid" id="diagram7">
+graph TB
+    TS1[Person Image B,3,1024,768]
+    TS2[Agnostic Image B,3,1024,768]
+    TS3[Parse Agnostic B,13,1024,768]
+    TS4[Pose B,3,1024,768]
+    TS5[Cloth B,3,1024,768]
+    TS6[Seg Input B,21,256,192]
+    TS7[Parse Predicted B,13,1024,768]
+    TS8[GMM Input A B,7,256,192]
+    TS9[GMM Input B B,3,256,192]
+    TS10[Warped Cloth B,3,1024,768]
+    TS11[ALIAS Input B,9,1024,768]
+    TS12[Try-On Result B,3,1024,768]
+    
+    TS1 --> TS2
+    TS2 --> TS3
+    TS1 --> TS4
+    TS5 --> TS6
+    TS3 --> TS6
+    TS4 --> TS6
+    TS6 --> TS7
+    TS7 --> TS8
+    TS2 --> TS8
+    TS4 --> TS8
+    TS5 --> TS9
+    TS8 --> TS10
+    TS9 --> TS10
+    TS2 --> TS11
+    TS4 --> TS11
+    TS10 --> TS11
+    TS11 --> TS12
+            </div>
+        </div>
+
+        <!-- Diagram 8: Sequence Diagram -->
+        <div class="diagram-section" id="sequence-diagram">
+            <h2>8. System Interaction Sequence</h2>
+            <p>Detailed sequence of operations and data flow between components during virtual try-on.</p>
+            <div class="mermaid" id="diagram8">
+sequenceDiagram
+    participant User
+    participant WebUI
+    participant Controller
+    participant DataLoader
+    participant SegGen
+    participant GMM
+    participant ALIAS
+    participant Storage
+    
+    User->>WebUI: Select person & cloth
+    WebUI->>Controller: POST /tryon
+    Controller->>DataLoader: Load datasets
+    DataLoader->>Storage: Read images & data
+    Storage-->>DataLoader: Return data
+    DataLoader-->>Controller: Preprocessed tensors
+    
+    Controller->>SegGen: Forward B,21,256,192
+    Note over SegGen: U-Net processing
+    SegGen-->>Controller: Predicted parse B,13,1024,768
+    
+    Controller->>GMM: Forward A B,7,256,192 B B,3,256,192
+    Note over GMM: Feature extraction TPS transformation
+    GMM-->>Controller: Warped cloth + grid
+    
+    Controller->>ALIAS: Forward B,9,1024,768
+    Note over ALIAS: ALIAS normalization Residual blocks
+    ALIAS-->>Controller: Final result B,3,1024,768
+    
+    Controller->>Storage: Save result
+    Storage-->>Controller: Result path
+    Controller-->>WebUI: Render result
+    WebUI-->>User: Display try-on image
+            </div>
+        </div>
+
+        <!-- Diagram 9: Layered Architecture -->
+        <div class="diagram-section" id="layered-architecture">
+            <h2>9. Complete Layered System Architecture</h2>
+            <p>Full system architecture showing all layers, components, and their interconnections.</p>
+            <div class="mermaid" id="diagram9">
+graph TB
+    subgraph Presentation
+        Web[Web Layer Flask]
+        API[REST API]
+        UI[HTML Templates]
+    end
+    
+    subgraph Application
+        Ctrl[Controller]
+        AI[AI Engine]
+        AR[AR Processor]
+    end
+    
+    subgraph Business
+        Orch[Orchestrator]
+        Loader[DataLoader]
+        Pre[Preprocessor]
+        Post[Postprocessor]
+    end
+    
+    subgraph Model
+        S1[Stage1 SegGen 45M params]
+        S2[Stage2 GMM 12M params]
+        S3[Stage3 ALIAS 93M params]
+    end
+    
+    subgraph Data
+        DS[VITONDataset]
+        FM[FileManager]
+        Cache[AICache]
+    end
+    
+    subgraph Storage
+        PDB[(Person)]
+        CDB[(Cloth)]
+        MDB[(Mask)]
+        PoDb[(Pose)]
+        PaDb[(Parse)]
+        ModDb[(Models)]
+        ResDb[(Results)]
+    end
+    
+    Web --> Ctrl
+    API --> Ctrl
+    UI --> Web
+    
+    Ctrl --> AI
+    Ctrl --> AR
+    Ctrl --> Orch
+    
+    Orch --> Loader
+    Orch --> Pre
+    Orch --> Post
+    Orch --> S1
+    
+    S1 --> S2
+    S2 --> S3
+    
+    Loader --> DS
+    DS --> FM
+    DS --> Cache
+    
+    FM --> PDB
+    FM --> CDB
+    FM --> MDB
+    FM --> PoDb
+    FM --> PaDb
+    
+    S1 --> ModDb
+    S2 --> ModDb
+    S3 --> ModDb
+    
+    Post --> ResDb
+            </div>
+        </div>
+
+        <div class="info-box">
+            <strong>💡 Usage Tips:</strong>
+            <ul>
+                <li>Click "Download All as PNG" to save all diagrams as image files</li>
+                <li>Use "Print / Save as PDF" to create a PDF document of all diagrams</li>
+                <li>Click "Copy Mermaid Code" to get the raw diagram code for use in other tools</li>
+                <li>Each diagram is interactive - you can zoom and pan in most modern browsers</li>
+            </ul>
+        </div>
+
+        <footer>
+            <p><strong>VITON-HD Virtual Try-On System</strong></p>
+            <p>System Architecture & Schema Documentation</p>
+            <p>Generated on: <span id="date"></span></p>
+        </footer>
+    </div>
+
+    <script>
+        // Initialize Mermaid
+        try {
+            mermaid.initialize({ 
+                startOnLoad: true,
+                theme: 'default',
+                flowchart: {
+                    useMaxWidth: true,
+                    htmlLabels: true,
+                    curve: 'basis'
+                },
+                securityLevel: 'loose'
+            });
+            
+            // Ensure diagrams render properly
+            document.addEventListener('DOMContentLoaded', function() {
+                mermaid.init(undefined, '.mermaid');
+            });
+        } catch (error) {
+            console.error('Mermaid initialization failed:', error);
+            // Fallback: Show raw diagram code
+            document.addEventListener('DOMContentLoaded', function() {
+                const mermaidDivs = document.querySelectorAll('.mermaid');
+                mermaidDivs.forEach(div => {
+                    div.style.whiteSpace = 'pre';
+                    div.style.fontFamily = 'monospace';
+                    div.style.backgroundColor = '#f5f5f5';
+                    div.style.padding = '15px';
+                    div.style.border = '1px solid #ddd';
+                    div.style.borderRadius = '5px';
+                });
+            });
+        }
+
+        // Set current date
+        document.getElementById('date').textContent = new Date().toLocaleDateString();
+
+        // Download all diagrams as PNG
+        async function downloadAllAsPNG() {
+            alert('To download diagrams as PNG:\n\n1. Right-click on any diagram\n2. Select "Save image as..."\n3. Choose location and save\n\nOr use browser extensions like "Mermaid Diagram Exporter" for batch download.');
+        }
+
+        // Download this page as HTML
+        function downloadAsHTML() {
+            const htmlContent = document.documentElement.outerHTML;
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'VITON_HD_Architecture_Diagrams.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Copy all Mermaid code
+        function copyMermaidCode() {
+            const mermaidDivs = document.querySelectorAll('.mermaid');
+            let allCode = '# VITON-HD System Architecture Diagrams - Mermaid Code\n\n';
+            
+            mermaidDivs.forEach((div, index) => {
+                allCode += `## Diagram ${index + 1}
+\`\`\`mermaid
+${div.textContent.trim()}
+\`\`\`
+
+`;
+            });
+            
+            navigator.clipboard.writeText(allCode).then(() => {
+                alert('✅ All Mermaid diagram code copied to clipboard!\n\nYou can now paste it into:\n- GitHub markdown files\n- GitLab documentation\n- Notion pages\n- Confluence\n- Any Mermaid-compatible editor');
+            }).catch(err => {
+                alert('Failed to copy. Please try again.');
+            });
+        }
+    </script>
+</body>
+</html>
