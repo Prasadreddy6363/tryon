@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual Try-On - Quick Access</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 800px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+        .status {
+            display: inline-block;
+            background: #10b981;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+        .links {
+            display: grid;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        .link-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .link-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+        .link-icon {
+            font-size: 32px;
+        }
+        .link-content h3 {
+            margin-bottom: 5px;
+            font-size: 18px;
+        }
+        .link-content p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+        .info {
+            background: #f3f4f6;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 30px;
+        }
+        .info h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .info ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .info li {
+            padding: 5px 0;
+            color: #666;
+        }
+        .info li:before {
+            content: "✓ ";
+            color: #10b981;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎉 Virtual Try-On Project</h1>
+        <span class="status">● RUNNING</span>
+        
+        <p style="color: #666; margin-top: 20px;">
+            Your virtual try-on server is running! Click any link below to access different features.
+        </p>
+
+        <div class="links">
+            <a href="http://localhost:5000/" class="link-card">
+                <div class="link-icon">🏠</div>
+                <div class="link-content">
+                    <h3>Main Interface</h3>
+                    <p>Select person & clothing, generate try-on results</p>
+                </div>
+            </a>
+
+            <a href="http://localhost:5000/ar_tryon" class="link-card">
+                <div class="link-icon">📷</div>
+                <div class="link-content">
+                    <h3>AR Live Try-On</h3>
+                    <p>Real-time camera try-on with body tracking</p>
+                </div>
+            </a>
+
+            <a href="http://localhost:5000/instant_tryon" class="link-card">
+                <div class="link-icon">⚡</div>
+                <div class="link-content">
+                    <h3>Instant Try-On</h3>
+                    <p>Snapchat-style quick try-on interface</p>
+                </div>
+            </a>
+        </div>
+
+        <div class="info">
+            <h3>Features Available:</h3>
+            <ul>
+                <li>AI-powered virtual try-on (VITON-HD)</li>
+                <li>Real-time AR with body tracking</li>
+                <li>Smart recommendations & auto-pairing</li>
+                <li>Shopping integration (Myntra/Ajio)</li>
+                <li>Skin tone classification</li>
+                <li>History & favorites</li>
+                <li>AI chatbot assistant</li>
+            </ul>
+        </div>
+
+        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb; color: #999; font-size: 14px; text-align: center;">
+            Server: http://localhost:5000 | Port: 5000 | Status: Running ✓
+        </div>
+    </div>
+</body>
+</html>

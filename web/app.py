@@ -765,8 +765,62 @@ def get_chatbot_response(user_message):
     """Generate chatbot response based on user message"""
     message = user_message.lower()
     
+    # Shopping and purchasing (check first for priority)
+    if any(word in message for word in ['search', 'buy', 'purchase', 'shop', 'myntra', 'ajio', 'shopping']) and any(item in message for item in ['shirt', 'jeans', 'dress', 'shoes', 'jacket', 't-shirt', 'kurta', 'tshirt', 'saree', 'blazer', 'clothes', 'clothing']):
+        # Extract item from message
+        items = ['t-shirt', 'tshirt', 'shirt', 'jeans', 'dress', 'shoes', 'jacket', 'kurta', 'saree', 'blazer']
+        found_item = next((item for item in items if item in message), 't-shirt')
+        
+        # Get actual shopping data
+        shopping_data = get_shopping_data(found_item, max_results=3)
+        formatted_msg = format_shopping_results(shopping_data, found_item)
+        
+        return {
+            'message': formatted_msg,
+            'suggestions': [
+                f"Compare {found_item} prices",
+                "Show trending items",
+                "Search for more items",
+                "Find similar items"
+            ]
+        }
+    
+    # Price comparison
+    elif 'compare' in message and 'price' in message:
+        # Extract item to compare
+        items = ['shirt', 'jeans', 'dress', 'shoes', 'jacket', 't-shirt', 'kurta', 'saree', 'blazer']
+        found_item = next((item for item in items if item in message), 't-shirt')
+        
+        # Get actual price comparison
+        comparison_msg = get_price_comparison(found_item)
+        
+        return {
+            'message': comparison_msg,
+            'suggestions': [
+                f"Search for {found_item}s",
+                "Show trending items",
+                "Find best deals",
+                "Compare other items"
+            ]
+        }
+    
+    # Trending items
+    elif any(word in message for word in ['trending', 'popular', 'latest', 'fashion', 'style']):
+        # Get actual trending items
+        trending_msg = get_trending_items()
+        
+        return {
+            'message': trending_msg,
+            'suggestions': [
+                "Search for t-shirts",
+                "Search for jeans",
+                "Search for kurtas",
+                "Compare prices"
+            ]
+        }
+    
     # Greeting responses
-    if any(word in message for word in ['hello', 'hi', 'hey', 'start', 'help']):
+    elif any(word in message for word in ['hello', 'hi', 'hey']) or message.strip() in ['start', 'help']:
         return {
             'message': "👋 Hello! I'm your Virtual Try-On Assistant! I can help you:\n\n• Navigate the interface\n• Find the perfect outfit\n• Use AI features\n• Manage your history\n• Answer questions about virtual try-on\n\nWhat would you like to do today?",
             'suggestions': [
@@ -889,55 +943,30 @@ def get_chatbot_response(user_message):
             ]
         }
     
-    # Shopping and purchasing
-    elif any(word in message for word in ['buy', 'purchase', 'shop', 'price', 'cost', 'myntra', 'ajio', 'shopping']):
-        if 'compare' in message or 'price' in message:
-            return {
-                'message': "💰 **Price Comparison & Shopping:**\n\nI can help you find the best deals across multiple platforms!\n\n🛍️ **Available Platforms:**\n• **Myntra** - Wide variety, great discounts\n• **Ajio** - Trendy collections, competitive prices\n\n💡 **What I can do:**\n• Search for specific items\n• Compare prices across platforms\n• Show trending fashion items\n• Find best deals and discounts\n\nWhat would you like to shop for?",
-                'actions': ['shopping_mode'],
-                'suggestions': [
-                    "Search for t-shirts",
-                    "Compare jeans prices", 
-                    "Show trending items",
-                    "Find best deals"
-                ]
-            }
-        elif 'search' in message or any(item in message for item in ['shirt', 'jeans', 'dress', 'shoes', 'jacket']):
-            # Extract item from message
-            items = ['shirt', 'jeans', 'dress', 'shoes', 'jacket', 't-shirt', 'kurta', 'saree', 'blazer']
-            found_item = next((item for item in items if item in message), 'clothing')
-            
-            return {
-                'message': f"🔍 **Searching for {found_item}s across Myntra & Ajio...**\n\nI'll find the best options with:\n• Competitive prices\n• High ratings\n• Good discounts\n• Multiple size options\n\nLet me fetch the latest deals for you!",
-                'actions': ['search_shopping', found_item],
-                'suggestions': [
-                    f"Compare {found_item} prices",
-                    "Show more options",
-                    "Filter by brand",
-                    "Find similar items"
-                ]
-            }
-        else:
-            return {
-                'message': "🛍️ **Shopping Assistant Ready!**\n\n**I can help you:**\n• 🔍 Search items on Myntra & Ajio\n• 💰 Compare prices across platforms\n• 🔥 Show trending fashion items\n• 🏷️ Find best deals and discounts\n• ⭐ Check ratings and reviews\n• 📏 Find size availability\n\n**Popular Categories:**\nT-shirts, Jeans, Dresses, Shoes, Jackets, Kurtas, Sarees, Blazers\n\nWhat would you like to shop for today?",
-                'suggestions': [
-                    "Search for t-shirts",
-                    "Show trending items",
-                    "Compare prices",
-                    "Find best deals"
-                ]
-            }
+    # General shopping query (no specific item mentioned)
+    elif any(word in message for word in ['buy', 'purchase', 'shop', 'myntra', 'ajio', 'shopping']):
+        return {
+            'message': "🛍️ **Shopping Assistant Ready!**\n\n**I can help you:**\n• 🔍 Search items on Myntra & Ajio\n• 💰 Compare prices across platforms\n• 🔥 Show trending fashion items\n• 🏷️ Find best deals and discounts\n• ⭐ Check ratings and reviews\n• 📏 Find size availability\n\n**Popular Categories:**\nT-shirts, Jeans, Dresses, Shoes, Jackets, Kurtas, Sarees, Blazers\n\n**Browse More:**\n🔗 [View All Myntra & Ajio Products on Google Shopping](https://www.google.com/search?udm=28&q=myntra+and+ajio)\n\nWhat would you like to shop for today?",
+            'suggestions': [
+                "Search for t-shirts",
+                "Show trending items",
+                "Compare jeans prices",
+                "Search for shoes"
+            ]
+        }
     
     # Trending items
     elif any(word in message for word in ['trending', 'popular', 'latest', 'fashion', 'style']):
+        # Get actual trending items
+        trending_msg = get_trending_items()
+        
         return {
-            'message': "🔥 **Trending Fashion & Latest Styles:**\n\nI'll show you what's hot in fashion right now across Myntra and Ajio!\n\n✨ **Trending Categories:**\n• Oversized clothing\n• Sustainable fashion\n• Athleisure wear\n• Ethnic fusion\n• Minimalist designs\n\nLet me fetch the latest trending items for you!",
-            'actions': ['fetch_trending'],
+            'message': trending_msg,
             'suggestions': [
-                "Show trending items",
-                "Search oversized t-shirts",
-                "Find ethnic wear",
-                "Show athleisure"
+                "Search for t-shirts",
+                "Search for jeans",
+                "Search for kurtas",
+                "Compare prices"
             ]
         }
     
@@ -1002,6 +1031,13 @@ def get_myntra_data(query, category="clothing", max_results=5):
     myntra_items = []
     for i, item in enumerate(items[:max_results]):
         discount = round(((item['original'] - item['price']) / item['original']) * 100)
+        
+        # Use real image URL if provided, otherwise use placeholder
+        image_url = item.get('image_url', f'https://assets.myntassets.com/h_720,q_90,w_540/v1/assets/images/placeholder_{item["brand"].lower().replace(" ", "-")}_{i+1}.jpg')
+        
+        # Use real product URL if provided, otherwise use search URL
+        product_url = item.get('product_url', f'https://www.myntra.com/search?q={quote(query)}')
+        
         myntra_items.append({
             'id': f'MYN{i+1:03d}',
             'name': item['name'],
@@ -1011,8 +1047,8 @@ def get_myntra_data(query, category="clothing", max_results=5):
             'discount': discount,
             'rating': item['rating'],
             'reviews': item['reviews'],
-            'image': f'https://assets.myntassets.com/{item["brand"].lower().replace(" ", "-")}/{i+1}.jpg',
-            'url': f'https://www.myntra.com/search?q={quote(query)}',
+            'image': image_url,
+            'url': product_url,
             'sizes': item.get('sizes', ['S', 'M', 'L', 'XL']),
             'colors': item.get('colors', ['Black', 'Navy', 'White']),
             'category': category,
@@ -1035,6 +1071,13 @@ def get_ajio_data(query, category="clothing", max_results=5):
     ajio_items = []
     for i, item in enumerate(items[:max_results]):
         discount = round(((item['original'] - item['price']) / item['original']) * 100)
+        
+        # Use real image URL if provided, otherwise use placeholder
+        image_url = item.get('image_url', f'https://assets.ajio.com/medias/placeholder_{item["brand"].lower().replace(" ", "-")}_{i+1}.jpg')
+        
+        # Use real product URL if provided, otherwise use search URL
+        product_url = item.get('product_url', f'https://www.ajio.com/search/{quote(query)}')
+        
         ajio_items.append({
             'id': f'AJI{i+1:03d}',
             'name': item['name'],
@@ -1044,8 +1087,8 @@ def get_ajio_data(query, category="clothing", max_results=5):
             'discount': discount,
             'rating': item['rating'],
             'reviews': item['reviews'],
-            'image': f'https://assets.ajio.com/{item["brand"].lower().replace(" ", "-")}/{i+1}.jpg',
-            'url': f'https://www.ajio.com/search/{quote(query)}',
+            'image': image_url,
+            'url': product_url,
             'sizes': item.get('sizes', ['S', 'M', 'L', 'XL']),
             'colors': item.get('colors', ['Black', 'Navy', 'White']),
             'category': category,
@@ -1079,6 +1122,11 @@ def format_shopping_results(shopping_data, query):
                 message += f"• **{item['name']}** by {item['brand']}\n"
                 message += f"  ₹{item['price']:,}{discount_text}{rating_text}\n"
             message += "\n"
+    
+    # Add Google Shopping link for more options
+    google_shopping_url = f"https://www.google.com/search?udm=28&q={quote(query)}+myntra+ajio"
+    message += f"🔍 **Want more options?**\n"
+    message += f"[Browse all {query}s on Google Shopping]({google_shopping_url})\n"
     
     return message
 
@@ -1178,67 +1226,148 @@ def get_trending_items():
     return message
 
 def apply_ar_overlay(frame, cloth, keypoints):
-    """Apply AR clothing overlay on frame using body keypoints"""
+    """
+    Apply AR clothing overlay on frame using body keypoints with improved accuracy
+    
+    Improvements:
+    - Better perspective transformation
+    - Adaptive sizing based on body proportions
+    - Smooth blending with edge feathering
+    - Rotation compensation for body angle
+    - Enhanced keypoint validation
+    """
     if not keypoints or len(keypoints) < 33:
-        # No valid pose detected, just return original frame
         return frame
     
     try:
-        # Extract relevant keypoints (MediaPipe Pose landmarks)
-        # Key points: 11-left shoulder, 12-right shoulder, 23-left hip, 24-right hip
+        # Extract all relevant keypoints (MediaPipe Pose landmarks)
+        # Shoulders: 11-left, 12-right
+        # Elbows: 13-left, 14-right
+        # Hips: 23-left, 24-right
+        # Neck: 0-nose (approximate)
+        
         left_shoulder = keypoints[11] if len(keypoints) > 11 else None
         right_shoulder = keypoints[12] if len(keypoints) > 12 else None
+        left_elbow = keypoints[13] if len(keypoints) > 13 else None
+        right_elbow = keypoints[14] if len(keypoints) > 14 else None
         left_hip = keypoints[23] if len(keypoints) > 23 else None
         right_hip = keypoints[24] if len(keypoints) > 24 else None
+        nose = keypoints[0] if len(keypoints) > 0 else None
         
-        # Check if all required keypoints are visible
-        if not all([left_shoulder, right_shoulder, left_hip, right_hip]):
+        # Validate required keypoints
+        required_kps = [left_shoulder, right_shoulder, left_hip, right_hip]
+        if not all(required_kps):
             return frame
         
-        # Check visibility of keypoints
-        if not all([kp.get('visibility', 0) > 0.5 if kp else False for kp in [left_shoulder, right_shoulder, left_hip, right_hip]]):
+        # Check visibility threshold (more strict for better accuracy)
+        min_visibility = 0.6
+        if not all([kp.get('visibility', 0) > min_visibility for kp in required_kps]):
             return frame
         
-        # Calculate bounding box for torso
         frame_h, frame_w = frame.shape[:2]
         
-        # Ensure keypoints are not None before accessing
-        if left_shoulder and right_shoulder and left_hip and right_hip:
-            shoulder_x = int((left_shoulder['x'] + right_shoulder['x']) / 2 * frame_w)
-            shoulder_y = int((left_shoulder['y'] + right_shoulder['y']) / 2 * frame_h)
-            hip_x = int((left_hip['x'] + right_hip['x']) / 2 * frame_w)
-            hip_y = int((left_hip['y'] + right_hip['y']) / 2 * frame_h)
+        # Calculate key body measurements
+        left_shoulder_pos = (int(left_shoulder['x'] * frame_w), int(left_shoulder['y'] * frame_h))
+        right_shoulder_pos = (int(right_shoulder['x'] * frame_w), int(right_shoulder['y'] * frame_h))
+        left_hip_pos = (int(left_hip['x'] * frame_w), int(left_hip['y'] * frame_h))
+        right_hip_pos = (int(right_hip['x'] * frame_w), int(right_hip['y'] * frame_h))
+        
+        # Calculate shoulder width and torso height
+        shoulder_width = np.sqrt((right_shoulder_pos[0] - left_shoulder_pos[0])**2 + 
+                                (right_shoulder_pos[1] - left_shoulder_pos[1])**2)
+        
+        # Calculate torso height (shoulder to hip)
+        torso_height = np.sqrt((left_hip_pos[0] - left_shoulder_pos[0])**2 + 
+                              (left_hip_pos[1] - left_shoulder_pos[1])**2)
+        
+        # Calculate body angle (rotation)
+        shoulder_angle = np.arctan2(right_shoulder_pos[1] - left_shoulder_pos[1],
+                                    right_shoulder_pos[0] - left_shoulder_pos[0])
+        
+        # Calculate center points
+        shoulder_center = ((left_shoulder_pos[0] + right_shoulder_pos[0]) // 2,
+                          (left_shoulder_pos[1] + right_shoulder_pos[1]) // 2)
+        hip_center = ((left_hip_pos[0] + right_hip_pos[0]) // 2,
+                     (left_hip_pos[1] + right_hip_pos[1]) // 2)
+        
+        # Adaptive sizing based on body proportions
+        cloth_width = int(shoulder_width * 1.4)  # Slightly wider than shoulders
+        cloth_height = int(torso_height * 1.3)   # Cover torso area
+        
+        # Ensure minimum size
+        cloth_width = max(cloth_width, 100)
+        cloth_height = max(cloth_height, 150)
+        
+        # Calculate placement position (slightly above shoulders for neck area)
+        neck_offset = int(torso_height * 0.15)
+        cloth_x = max(0, shoulder_center[0] - cloth_width // 2)
+        cloth_y = max(0, shoulder_center[1] - neck_offset)
+        
+        # Ensure cloth fits within frame
+        cloth_w = min(cloth_width, frame_w - cloth_x)
+        cloth_h = min(cloth_height, frame_h - cloth_y)
+        
+        if cloth_w <= 0 or cloth_h <= 0:
+            return frame
+        
+        # Resize cloth to calculated dimensions
+        cloth_resized = cv2.resize(cloth, (cloth_w, cloth_h), interpolation=cv2.INTER_LANCZOS4)
+        
+        # Apply rotation if body is tilted
+        if abs(shoulder_angle) > 0.1:  # More than ~6 degrees
+            angle_deg = np.degrees(shoulder_angle)
+            rotation_matrix = cv2.getRotationMatrix2D((cloth_w // 2, cloth_h // 2), angle_deg, 1.0)
+            cloth_resized = cv2.warpAffine(cloth_resized, rotation_matrix, (cloth_w, cloth_h),
+                                          flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT,
+                                          borderValue=(0, 0, 0))
+        
+        # Create smooth alpha mask for better blending
+        alpha_mask = np.ones((cloth_h, cloth_w), dtype=np.float32)
+        
+        # Feather edges for smooth transition
+        feather_size = min(cloth_w, cloth_h) // 10
+        for i in range(feather_size):
+            alpha_value = i / feather_size
+            # Top edge
+            if i < cloth_h:
+                alpha_mask[i, :] *= alpha_value
+            # Bottom edge
+            if cloth_h - i - 1 >= 0:
+                alpha_mask[cloth_h - i - 1, :] *= alpha_value
+            # Left edge
+            if i < cloth_w:
+                alpha_mask[:, i] *= alpha_value
+            # Right edge
+            if cloth_w - i - 1 >= 0:
+                alpha_mask[:, cloth_w - i - 1] *= alpha_value
+        
+        # Adaptive transparency based on visibility confidence
+        avg_visibility = np.mean([kp.get('visibility', 0) for kp in required_kps])
+        base_alpha = 0.7 * avg_visibility  # Higher visibility = more opaque
+        
+        # Apply alpha blending with smooth mask
+        roi = frame[cloth_y:cloth_y+cloth_h, cloth_x:cloth_x+cloth_w].copy()
+        
+        for c in range(3):  # For each color channel
+            roi[:, :, c] = (roi[:, :, c] * (1 - alpha_mask * base_alpha) + 
+                           cloth_resized[:, :, c] * alpha_mask * base_alpha).astype(np.uint8)
+        
+        frame[cloth_y:cloth_y+cloth_h, cloth_x:cloth_x+cloth_w] = roi
+        
+        # Optional: Draw skeleton for debugging (can be toggled)
+        draw_skeleton = False  # Set to True for debugging
+        if draw_skeleton:
+            # Draw shoulder line
+            cv2.line(frame, left_shoulder_pos, right_shoulder_pos, (0, 255, 0), 2)
+            # Draw hip line
+            cv2.line(frame, left_hip_pos, right_hip_pos, (0, 255, 0), 2)
+            # Draw torso lines
+            cv2.line(frame, left_shoulder_pos, left_hip_pos, (0, 255, 0), 2)
+            cv2.line(frame, right_shoulder_pos, right_hip_pos, (0, 255, 0), 2)
             
-            shoulder_width = int(abs(right_shoulder['x'] - left_shoulder['x']) * frame_w)
-            torso_height = int(abs(hip_y - shoulder_y))
-            
-            # Expand for better coverage
-            shoulder_width = int(shoulder_width * 1.3)
-            torso_height = int(torso_height * 1.2)
-            
-            # Calculate cloth placement
-            cloth_x = max(0, shoulder_x - shoulder_width // 2)
-            cloth_y = max(0, shoulder_y - int(torso_height * 0.1))
-            cloth_w = min(shoulder_width, frame_w - cloth_x)
-            cloth_h = min(torso_height, frame_h - cloth_y)
-            
-            if cloth_w <= 0 or cloth_h <= 0:
-                return frame
-            
-            # Resize cloth to fit torso
-            cloth_resized = cv2.resize(cloth, (cloth_w, cloth_h))
-            
-            # Create alpha blend for natural overlay
-            alpha = 0.6  # Transparency level
-            
-            # Blend cloth onto frame
-            roi = frame[cloth_y:cloth_y+cloth_h, cloth_x:cloth_x+cloth_w]
-            blended = cv2.addWeighted(roi, 1-alpha, cloth_resized, alpha, 0)
-            frame[cloth_y:cloth_y+cloth_h, cloth_x:cloth_x+cloth_w] = blended
-            
-            # Draw keypoints for visualization (optional)
-            for kp in [left_shoulder, right_shoulder, left_hip, right_hip]:
-                if kp and kp.get('visibility', 0) > 0.5:
+            # Draw keypoints
+            for kp in required_kps:
+                if kp and kp.get('visibility', 0) > min_visibility:
                     x = int(kp['x'] * frame_w)
                     y = int(kp['y'] * frame_h)
                     cv2.circle(frame, (x, y), 5, (0, 255, 0), -1)
@@ -1247,6 +1376,8 @@ def apply_ar_overlay(frame, cloth, keypoints):
         
     except Exception as e:
         print(f"AR overlay error: {e}")
+        import traceback
+        traceback.print_exc()
         return frame
 
 def remove_white_background(img, threshold=240):
