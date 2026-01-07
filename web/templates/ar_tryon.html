@@ -593,12 +593,12 @@
             });
             
             pose.setOptions({
-                modelComplexity: 1,
+                modelComplexity: 2, // Use heavy model for better accuracy
                 smoothLandmarks: true,
                 enableSegmentation: false,
                 smoothSegmentation: false,
-                minDetectionConfidence: 0.5,
-                minTrackingConfidence: 0.5,
+                minDetectionConfidence: 0.7, // Increased for better detection
+                minTrackingConfidence: 0.7, // Increased for better tracking
                 selfieMode: true // Enable selfie mode for better mirroring
             });
             
@@ -710,6 +710,16 @@
             // Save landmarks
             currentKeypoints = results.poseLandmarks;
             
+            if (!currentKeypoints) {
+                // No pose detected
+                ctx.fillStyle = 'rgba(255, 0, 0, 0.7)';
+                ctx.fillRect(10, 10, 300, 40);
+                ctx.fillStyle = 'white';
+                ctx.font = 'bold 14px Arial';
+                ctx.fillText('⚠️ No body detected - step back', 20, 35);
+                return;
+            }
+            
             if (currentKeypoints && selectedCloth) {
                 // Draw cloth overlay
                 drawClothOverlay(currentKeypoints);
@@ -730,23 +740,50 @@
                 return;
             }
             
-            // Get key body landmarks
-            const nose = landmarks[0];           // For head reference
-            const leftShoulder = landmarks[11];
-            const rightShoulder = landmarks[12];
-            const leftHip = landmarks[23];
-            const rightHip = landmarks[24];
+            // FIX: Correct the mirroring issue by adjusting x-coordinates
+            // Create a copy of landmarks with corrected x-coordinates
+            const correctedLandmarks = landmarks.map(landmark => ({
+                ...landmark,
+                x: 1.0 - landmark.x  // Flip x-coordinate to correct mirroring
+            }));
             
-            // Check visibility of critical points
+            // Get key body landmarks from corrected landmarks
+            const nose = correctedLandmarks[0];           // For head reference
+            const leftShoulder = correctedLandmarks[11];
+            const rightShoulder = correctedLandmarks[12];
+            const leftElbow = correctedLandmarks[13];
+            const rightElbow = correctedLandmarks[14];
+            const leftWrist = correctedLandmarks[15];
+            const rightWrist = correctedLandmarks[16];
+            const leftHip = correctedLandmarks[23];
+            const rightHip = correctedLandmarks[24];
+            
+            // Check visibility of critical points - RELAXED THRESHOLDS
             if (!leftShoulder || !rightShoulder || !leftHip || !rightHip) {
-                console.log('Missing landmarks');
+                console.log('Missing landmarks - ensure full upper body is visible');
+                // Show visual warning
+                ctx.fillStyle = 'rgba(255, 165, 0, 0.7)';
+                ctx.fillRect(10, 60, 350, 40);
+                ctx.fillStyle = 'white';
+                ctx.font = 'bold 14px Arial';
+                ctx.fillText('⚠️ Missing body parts - show full torso', 20, 85);
                 return;
             }
-            if (leftShoulder.visibility < 0.5 || rightShoulder.visibility < 0.5 ||
-                leftHip.visibility < 0.5 || rightHip.visibility < 0.5) {
-                console.log('Low visibility landmarks');
+            if (leftShoulder.visibility < 0.3 || rightShoulder.visibility < 0.3 ||
+                leftHip.visibility < 0.3 || rightHip.visibility < 0.3) {
+                console.log('Low visibility landmarks - move closer or improve lighting');
+                // Show visual warning
+                ctx.fillStyle = 'rgba(255, 165, 0, 0.7)';
+                ctx.fillRect(10, 60, 350, 40);
+                ctx.fillStyle = 'white';
+                ctx.font = 'bold 14px Arial';
+                ctx.fillText('⚠️ Low visibility - improve lighting', 20, 85);
                 return;
             }
+            
+            // Optional: Check elbow visibility for better sleeve positioning
+            const leftElbowVisible = leftElbow && leftElbow.visibility > 0.3;
+            const rightElbowVisible = rightElbow && rightElbow.visibility > 0.3;
             
             // Convert to pixel coordinates using actual canvas dimensions
             const leftShoulderX = leftShoulder.x * canvas.width;
@@ -767,15 +804,34 @@
             
             // Enhanced: Calculate shoulder width and body height
             const shoulderWidth = Math.abs(rightShoulderX - leftShoulderX);
-            const bodyHeight = hipCenterY - shoulderCenterY;
+            const bodyHeight = Math.abs(hipCenterY - shoulderCenterY);
             
             // Enhanced: Calculate shirt dimensions with better proportions
-            const shirtWidth = shoulderWidth * 2.2 * settings.scale; // Increased coverage
-            const shirtHeight = bodyHeight * 2.0 * settings.scale; // Extended to cover more torso
+            // Use nose position for better collar alignment
+            const noseY = nose ? nose.y * canvas.height : shoulderCenterY - bodyHeight * 0.5;
+            const collarOffset = Math.abs(shoulderCenterY - noseY) * 0.6; // Distance from nose to collar
             
-            // Enhanced: Position shirt with better alignment
+            // Enhanced: Calculate shirt dimensions using elbow positions for better sleeve coverage
+            let shirtWidth = shoulderWidth * 2.5 * settings.scale; // Wider coverage for sleeves
+            
+            // If elbows are visible, use them to calculate appropriate sleeve length
+            if (leftElbowVisible && rightElbowVisible) {
+                // Calculate approximate arm span from elbow positions
+                const leftElbowX = leftElbow.x * canvas.width;
+                const rightElbowX = rightElbow.x * canvas.width;
+                const armSpan = Math.abs(rightElbowX - leftElbowX);
+                
+                // Adjust shirt width based on arm span if it's wider than shoulder width
+                if (armSpan > shoulderWidth) {
+                    shirtWidth = armSpan * 1.4 * settings.scale; // Factor for sleeve coverage
+                }
+            }
+            
+            const shirtHeight = bodyHeight * 2.2 * settings.scale; // Extended to cover full torso
+            
+            // Enhanced: Position shirt with better alignment using nose reference
             const shirtX = shoulderCenterX - (shirtWidth / 2) + settings.horizontalOffset;
-            const shirtY = shoulderCenterY - (shirtHeight * 0.4) + settings.verticalOffset; // Better collar positioning
+            const shirtY = shoulderCenterY - collarOffset + settings.verticalOffset; // Position collar above shoulders
             
             // Clamp to canvas boundaries
             const finalX = Math.max(0, Math.min(shirtX, canvas.width - 10));
@@ -882,15 +938,27 @@
         }
 
         function drawSkeleton(landmarks) {
-            // Draw torso rectangle for alignment reference
-            const leftShoulder = landmarks[11];
-            const rightShoulder = landmarks[12];
-            const leftHip = landmarks[23];
-            const rightHip = landmarks[24];
-            const nose = landmarks[0];
+            // FIX: Use corrected landmarks to fix mirroring issue
+            // Create a copy of landmarks with corrected x-coordinates
+            const correctedLandmarks = landmarks.map(landmark => ({
+                ...landmark,
+                x: 1.0 - landmark.x  // Flip x-coordinate to correct mirroring
+            }));
             
-            if (leftShoulder.visibility > 0.5 && rightShoulder.visibility > 0.5 &&
-                leftHip.visibility > 0.5 && rightHip.visibility > 0.5) {
+            // Draw torso rectangle for alignment reference
+            const leftShoulder = correctedLandmarks[11];
+            const rightShoulder = correctedLandmarks[12];
+            const leftElbow = correctedLandmarks[13];
+            const rightElbow = correctedLandmarks[14];
+            const leftWrist = correctedLandmarks[15];
+            const rightWrist = correctedLandmarks[16];
+            const leftHip = correctedLandmarks[23];
+            const rightHip = correctedLandmarks[24];
+            const nose = correctedLandmarks[0];
+            
+            // RELAXED visibility threshold for better detection
+            if (leftShoulder.visibility > 0.3 && rightShoulder.visibility > 0.3 &&
+                leftHip.visibility > 0.3 && rightHip.visibility > 0.3) {
                 
                 // Draw actual body detection box
                 ctx.strokeStyle = '#00FF00';
@@ -903,6 +971,50 @@
                     [rightHip.x * canvas.width, rightHip.y * canvas.height],
                     [leftHip.x * canvas.width, leftHip.y * canvas.height]
                 ];
+                
+                // Optionally extend the box to include elbows for better sleeve visualization
+                if (leftElbow && rightElbow && leftElbow.visibility > 0.3 && rightElbow.visibility > 0.3) {
+                    // Calculate extended bounds including elbows
+                    const minX = Math.min(
+                        leftShoulder.x * canvas.width,
+                        rightShoulder.x * canvas.width,
+                        leftHip.x * canvas.width,
+                        rightHip.x * canvas.width,
+                        leftElbow.x * canvas.width,
+                        rightElbow.x * canvas.width
+                    );
+                    const maxX = Math.max(
+                        leftShoulder.x * canvas.width,
+                        rightShoulder.x * canvas.width,
+                        leftHip.x * canvas.width,
+                        rightHip.x * canvas.width,
+                        leftElbow.x * canvas.width,
+                        rightElbow.x * canvas.width
+                    );
+                    const minY = Math.min(
+                        leftShoulder.y * canvas.height,
+                        rightShoulder.y * canvas.height,
+                        leftHip.y * canvas.height,
+                        rightHip.y * canvas.height,
+                        leftElbow.y * canvas.height,
+                        rightElbow.y * canvas.height
+                    );
+                    const maxY = Math.max(
+                        leftShoulder.y * canvas.height,
+                        rightShoulder.y * canvas.height,
+                        leftHip.y * canvas.height,
+                        rightHip.y * canvas.height,
+                        leftElbow.y * canvas.height,
+                        rightElbow.y * canvas.height
+                    );
+                    
+                    // Draw extended torso box including arms
+                    ctx.strokeStyle = '#FFA500'; // Orange for extended box
+                    ctx.lineWidth = 2;
+                    ctx.setLineDash([5, 5]);
+                    ctx.strokeRect(minX, minY, maxX - minX, maxY - minY);
+                    ctx.setLineDash([]);
+                }
                 
                 ctx.beginPath();
                 ctx.moveTo(box[0][0], box[0][1]);
@@ -948,19 +1060,21 @@
                 [11, 23], // Left torso
                 [12, 24], // Right torso
                 [23, 24], // Hips
-                [11, 13], // Left arm
-                [12, 14]  // Right arm
+                [11, 13], // Left shoulder to left elbow
+                [12, 14], // Right shoulder to right elbow
+                [13, 15], // Left elbow to left wrist
+                [14, 16]  // Right elbow to right wrist
             ];
             
             ctx.strokeStyle = '#00FF00';
             ctx.lineWidth = 3;
             
             connections.forEach(([start, end]) => {
-                if (landmarks[start] && landmarks[end] &&
-                    landmarks[start].visibility > 0.5 && landmarks[end].visibility > 0.5) {
+                if (correctedLandmarks[start] && correctedLandmarks[end] &&
+                    correctedLandmarks[start].visibility > 0.5 && correctedLandmarks[end].visibility > 0.5) {
                     ctx.beginPath();
-                    ctx.moveTo(landmarks[start].x * canvas.width, landmarks[start].y * canvas.height);
-                    ctx.lineTo(landmarks[end].x * canvas.width, landmarks[end].y * canvas.height);
+                    ctx.moveTo(correctedLandmarks[start].x * canvas.width, correctedLandmarks[start].y * canvas.height);
+                    ctx.lineTo(correctedLandmarks[end].x * canvas.width, correctedLandmarks[end].y * canvas.height);
                     ctx.stroke();
                 }
             });
@@ -970,14 +1084,18 @@
                 { idx: 0, label: 'Nose' },
                 { idx: 11, label: 'L.Shoulder' },
                 { idx: 12, label: 'R.Shoulder' },
+                { idx: 13, label: 'L.Elbow' },
+                { idx: 14, label: 'R.Elbow' },
+                { idx: 15, label: 'L.Wrist' },
+                { idx: 16, label: 'R.Wrist' },
                 { idx: 23, label: 'L.Hip' },
                 { idx: 24, label: 'R.Hip' }
             ];
             
             importantPoints.forEach(point => {
-                if (landmarks[point.idx] && landmarks[point.idx].visibility > 0.5) {
-                    const x = landmarks[point.idx].x * canvas.width;
-                    const y = landmarks[point.idx].y * canvas.height;
+                if (correctedLandmarks[point.idx] && correctedLandmarks[point.idx].visibility > 0.5) {
+                    const x = correctedLandmarks[point.idx].x * canvas.width;
+                    const y = correctedLandmarks[point.idx].y * canvas.height;
                     
                     // Draw point
                     ctx.fillStyle = point.idx === 0 ? '#FFFF00' : '#00FF00';
