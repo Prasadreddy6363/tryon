@@ -466,35 +466,35 @@
                             </button>
                         </div>
                         
-                        <!-- Quick Position Adjustment Buttons -->
+                        <!-- Cloth Size Selection -->
                         <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 2px solid #3b82f6;">
-                            <h4 style="margin: 0 0 10px 0; font-size: 14px; color: #1e40af;">⬆️⬇️ Quick Adjust Position</h4>
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                                <button class="ar-btn" onclick="moveClothingUp()" 
-                                        style="background: #3b82f6; color: white; font-size: 13px; padding: 10px;">
-                                    ⬆️ Move Up
+                            <h4 style="margin: 0 0 10px 0; font-size: 14px; color: #1e40af;">📏 Cloth Size</h4>
+                            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
+                                <button class="ar-btn" onclick="selectSize('XS')" 
+                                        style="background: #6366f1; color: white; font-size: 12px; padding: 8px;">
+                                    XS
                                 </button>
-                                <button class="ar-btn" onclick="moveClothingDown()" 
-                                        style="background: #3b82f6; color: white; font-size: 13px; padding: 10px;">
-                                    ⬇️ Move Down
+                                <button class="ar-btn" onclick="selectSize('S')" 
+                                        style="background: #6366f1; color: white; font-size: 12px; padding: 8px;">
+                                    S
                                 </button>
-                                <button class="ar-btn" onclick="moveClothingLeft()" 
-                                        style="background: #6366f1; color: white; font-size: 13px; padding: 10px;">
-                                    ⬅️ Move Left
+                                <button class="ar-btn" onclick="selectSize('M')" 
+                                        style="background: #3b82f6; color: white; font-size: 12px; padding: 8px;">
+                                    M
                                 </button>
-                                <button class="ar-btn" onclick="moveClothingRight()" 
-                                        style="background: #6366f1; color: white; font-size: 13px; padding: 10px;">
-                                    ➡️ Move Right
+                                <button class="ar-btn" onclick="selectSize('L')" 
+                                        style="background: #3b82f6; color: white; font-size: 12px; padding: 8px;">
+                                    L
                                 </button>
                             </div>
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px;">
-                                <button class="ar-btn" onclick="makeClothingLarger()" 
-                                        style="background: #10b981; color: white; font-size: 13px; padding: 10px;">
-                                    🔼 Larger
+                            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 8px;">
+                                <button class="ar-btn" onclick="selectSize('XL')" 
+                                        style="background: #8b5cf6; color: white; font-size: 12px; padding: 8px;">
+                                    XL
                                 </button>
-                                <button class="ar-btn" onclick="makeClothingSmaller()" 
-                                        style="background: #f59e0b; color: white; font-size: 13px; padding: 10px;">
-                                    🔽 Smaller
+                                <button class="ar-btn" onclick="selectSize('XXL')" 
+                                        style="background: #8b5cf6; color: white; font-size: 12px; padding: 8px;">
+                                    XXL
                                 </button>
                             </div>
                         </div>
@@ -576,7 +576,8 @@
             scale: 1.0,
             showKeypoints: true,
             verticalOffset: 0,
-            horizontalOffset: 0
+            horizontalOffset: 0,
+            currentSize: 'M'
         };
 
         // Initialize on page load
@@ -725,9 +726,14 @@
                 drawClothOverlay(currentKeypoints);
             }
             
-            // Draw skeleton if enabled
+            // Draw skeleton if enabled - use corrected landmarks to match cloth overlay
             if (settings.showKeypoints && currentKeypoints) {
-                drawSkeleton(currentKeypoints);
+                // Create corrected landmarks for skeleton to match cloth overlay
+                const correctedKeypoints = currentKeypoints.map(landmark => ({
+                    ...landmark,
+                    x: 1.0 - landmark.x  // Flip x-coordinate to correct mirroring
+                }));
+                drawSkeleton(correctedKeypoints);
             }
         }
 
@@ -802,9 +808,12 @@
             const hipCenterX = (leftHipX + rightHipX) / 2;
             const hipCenterY = (leftHipY + rightHipY) / 2;
             
-            // Enhanced: Calculate shoulder width and body height
-            const shoulderWidth = Math.abs(rightShoulderX - leftShoulderX);
-            const bodyHeight = Math.abs(hipCenterY - shoulderCenterY);
+            // Enhanced: Calculate shoulder width and body height with more precise measurements
+            const shoulderWidth = Math.sqrt(Math.pow(rightShoulderX - leftShoulderX, 2) + Math.pow(rightShoulderY - leftShoulderY, 2));
+            const bodyHeight = Math.sqrt(Math.pow(hipCenterX - shoulderCenterX, 2) + Math.pow(hipCenterY - shoulderCenterY, 2));
+            
+            // Calculate shoulder angle for better rotation alignment
+            const shoulderAngle = Math.atan2(rightShoulderY - leftShoulderY, rightShoulderX - leftShoulderX);
             
             // Enhanced: Calculate shirt dimensions with better proportions
             // Use nose position for better collar alignment
@@ -812,26 +821,60 @@
             const collarOffset = Math.abs(shoulderCenterY - noseY) * 0.6; // Distance from nose to collar
             
             // Enhanced: Calculate shirt dimensions using elbow positions for better sleeve coverage
-            let shirtWidth = shoulderWidth * 2.5 * settings.scale; // Wider coverage for sleeves
+            // Adjust base size based on selected size
+            let baseWidthMultiplier = 2.2;
+            if (settings.currentSize === 'XS') baseWidthMultiplier = 1.9;
+            else if (settings.currentSize === 'S') baseWidthMultiplier = 2.0;
+            else if (settings.currentSize === 'L') baseWidthMultiplier = 2.4;
+            else if (settings.currentSize === 'XL') baseWidthMultiplier = 2.6;
+            else if (settings.currentSize === 'XXL') baseWidthMultiplier = 2.8;
+            
+            let shirtWidth = shoulderWidth * baseWidthMultiplier * settings.scale; // More accurate proportion based on shoulder width
             
             // If elbows are visible, use them to calculate appropriate sleeve length
             if (leftElbowVisible && rightElbowVisible) {
                 // Calculate approximate arm span from elbow positions
                 const leftElbowX = leftElbow.x * canvas.width;
+                const leftElbowY = leftElbow.y * canvas.height;
                 const rightElbowX = rightElbow.x * canvas.width;
-                const armSpan = Math.abs(rightElbowX - leftElbowX);
+                const rightElbowY = rightElbow.y * canvas.height;
                 
-                // Adjust shirt width based on arm span if it's wider than shoulder width
-                if (armSpan > shoulderWidth) {
-                    shirtWidth = armSpan * 1.4 * settings.scale; // Factor for sleeve coverage
-                }
+                // Calculate distance from shoulder to elbow for sleeve length
+                const leftShoulderToElbow = Math.sqrt(Math.pow(leftElbowX - leftShoulderX, 2) + Math.pow(leftElbowY - leftShoulderY, 2));
+                const rightShoulderToElbow = Math.sqrt(Math.pow(rightElbowX - rightShoulderX, 2) + Math.pow(rightElbowY - rightShoulderY, 2));
+                
+                // Calculate more accurate arm span
+                const armSpan = Math.sqrt(Math.pow(rightElbowX - leftElbowX, 2) + Math.pow(rightElbowY - leftElbowY, 2));
+                
+                // Adjust shirt width based on shoulder-to-elbow distance for better sleeve coverage
+                const avgShoulderToElbow = (leftShoulderToElbow + rightShoulderToElbow) / 2;
+                
+                // Use the maximum of shoulder width and arm considerations for better fit
+                // Adjust multiplier based on size
+                let armSpanMultiplier = 0.9;
+                if (settings.currentSize === 'XS') armSpanMultiplier = 0.75;
+                else if (settings.currentSize === 'S') armSpanMultiplier = 0.8;
+                else if (settings.currentSize === 'L') armSpanMultiplier = 1.0;
+                else if (settings.currentSize === 'XL') armSpanMultiplier = 1.1;
+                else if (settings.currentSize === 'XXL') armSpanMultiplier = 1.2;
+                
+                shirtWidth = Math.max(shoulderWidth * baseWidthMultiplier, armSpan * armSpanMultiplier) * settings.scale;
             }
             
-            const shirtHeight = bodyHeight * 2.2 * settings.scale; // Extended to cover full torso
+            // Adjust height based on selected size
+            let heightMultiplier = 1.8;
+            if (settings.currentSize === 'XS') heightMultiplier = 1.6;
+            else if (settings.currentSize === 'S') heightMultiplier = 1.7;
+            else if (settings.currentSize === 'L') heightMultiplier = 1.9;
+            else if (settings.currentSize === 'XL') heightMultiplier = 2.0;
+            else if (settings.currentSize === 'XXL') heightMultiplier = 2.1;
             
-            // Enhanced: Position shirt with better alignment using nose reference
+            const shirtHeight = bodyHeight * heightMultiplier * settings.scale; // Better proportion for torso coverage
+            
+            // Enhanced: Position shirt with better alignment using precise shoulder reference
+            // Adjust position based on shoulder angle for rotation
             const shirtX = shoulderCenterX - (shirtWidth / 2) + settings.horizontalOffset;
-            const shirtY = shoulderCenterY - collarOffset + settings.verticalOffset; // Position collar above shoulders
+            const shirtY = shoulderCenterY - (collarOffset * 0.7) + settings.verticalOffset; // Better collar positioning
             
             // Clamp to canvas boundaries
             const finalX = Math.max(0, Math.min(shirtX, canvas.width - 10));
@@ -847,6 +890,37 @@
                 ctx.strokeStyle = '#FFFF00';
                 ctx.lineWidth = 2;
                 ctx.strokeRect(finalX, finalY, finalWidth, finalHeight);
+                
+                // Draw shoulder alignment indicators
+                ctx.beginPath();
+                ctx.moveTo(leftShoulderX, leftShoulderY);
+                ctx.lineTo(rightShoulderX, rightShoulderY);
+                ctx.strokeStyle = '#00FFFF';
+                ctx.lineWidth = 3;
+                ctx.stroke();
+                
+                // Draw shoulder angle indicator
+                if (Math.abs(shoulderAngle) > 0.1) {
+                    const rotationIndicatorLength = Math.min(shoulderWidth * 0.7, 100);
+                    const midShoulderX = (leftShoulderX + rightShoulderX) / 2;
+                    const midShoulderY = (leftShoulderY + rightShoulderY) / 2;
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(midShoulderX, midShoulderY);
+                    ctx.lineTo(
+                        midShoulderX + Math.cos(shoulderAngle) * rotationIndicatorLength,
+                        midShoulderY + Math.sin(shoulderAngle) * rotationIndicatorLength
+                    );
+                    ctx.strokeStyle = '#FF00FF';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    
+                    // Add rotation angle text
+                    ctx.fillStyle = '#FF00FF';
+                    ctx.font = 'bold 10px Arial';
+                    ctx.fillText(`Rotation: ${(shoulderAngle * 180 / Math.PI).toFixed(1)}°`, midShoulderX + 10, midShoulderY - 10);
+                }
+                
                 ctx.fillStyle = '#FFFF00';
                 ctx.font = 'bold 12px Arial';
                 ctx.fillText(`Cloth: ${Math.round(finalWidth)}x${Math.round(finalHeight)}`, finalX + 5, finalY + 15);
@@ -866,18 +940,85 @@
                 img.onload = function() {
                     console.log(`✓ Cloth loaded: ${selectedCloth}`);
                     clothImageCache[selectedCloth] = img;
-                    drawClothImage(img, finalX, finalY, finalWidth, finalHeight);
+                    drawClothImage(img, finalX, finalY, finalWidth, finalHeight, shoulderAngle);
+                    
+                    // Draw sleeves separately for better alignment
+                    drawSleeves(leftShoulder, rightShoulder, leftElbow, rightElbow, leftWrist, rightWrist, leftElbowVisible, rightElbowVisible);
                 };
                 img.onerror = function() {
                     console.error(`✗ Failed to load: ${selectedCloth}`);
                 };
             } else {
                 console.log(`Using cached cloth: ${selectedCloth}`);
-                drawClothImage(clothImageCache[selectedCloth], finalX, finalY, finalWidth, finalHeight);
+                drawClothImage(clothImageCache[selectedCloth], finalX, finalY, finalWidth, finalHeight, shoulderAngle);
+                
+                // Draw sleeves separately for better alignment
+                drawSleeves(leftShoulder, rightShoulder, leftElbow, rightElbow, leftWrist, rightWrist, leftElbowVisible, rightElbowVisible);
             }
         }
         
-        function drawClothImage(img, x, y, width, height) {
+        function drawSleeves(leftShoulder, rightShoulder, leftElbow, rightElbow, leftWrist, rightWrist, leftElbowVisible, rightElbowVisible) {
+            if (!leftElbowVisible && !rightElbowVisible) {
+                return; // No need to draw sleeves if elbows aren't visible
+            }
+            
+            ctx.save();
+            ctx.globalAlpha = settings.opacity * 0.8; // Slightly less opaque than main garment
+            
+            // Draw left sleeve if visible
+            if (leftElbowVisible) {
+                const leftShoulderX = leftShoulder.x * canvas.width;
+                const leftShoulderY = leftShoulder.y * canvas.height;
+                const leftElbowX = leftElbow.x * canvas.width;
+                const leftElbowY = leftElbow.y * canvas.height;
+                
+                // Calculate sleeve dimensions based on shoulder to elbow distance
+                const shoulderElbowDist = Math.sqrt(Math.pow(leftElbowX - leftShoulderX, 2) + Math.pow(leftElbowY - leftShoulderY, 2));
+                const sleeveWidth = shoulderElbowDist * 0.3; // Proportional to arm length
+                
+                // Draw sleeve as a rotated rectangle
+                const sleeveAngle = Math.atan2(leftElbowY - leftShoulderY, leftElbowX - leftShoulderX);
+                const midX = (leftShoulderX + leftElbowX) / 2;
+                const midY = (leftShoulderY + leftElbowY) / 2;
+                
+                ctx.translate(midX, midY);
+                ctx.rotate(sleeveAngle);
+                
+                ctx.fillStyle = '#8B4513'; // Brown color for demonstration - this would be replaced with actual sleeve texture
+                ctx.fillRect(-sleeveWidth/2, -shoulderElbowDist/2, sleeveWidth, shoulderElbowDist);
+                
+                ctx.setTransform(1, 0, 0, 1, 0, 0); // Reset transform
+            }
+            
+            // Draw right sleeve if visible
+            if (rightElbowVisible) {
+                const rightShoulderX = rightShoulder.x * canvas.width;
+                const rightShoulderY = rightShoulder.y * canvas.height;
+                const rightElbowX = rightElbow.x * canvas.width;
+                const rightElbowY = rightElbow.y * canvas.height;
+                
+                // Calculate sleeve dimensions based on shoulder to elbow distance
+                const shoulderElbowDist = Math.sqrt(Math.pow(rightElbowX - rightShoulderX, 2) + Math.pow(rightElbowY - rightShoulderY, 2));
+                const sleeveWidth = shoulderElbowDist * 0.3; // Proportional to arm length
+                
+                // Draw sleeve as a rotated rectangle
+                const sleeveAngle = Math.atan2(rightElbowY - rightShoulderY, rightElbowX - rightShoulderX);
+                const midX = (rightShoulderX + rightElbowX) / 2;
+                const midY = (rightShoulderY + rightElbowY) / 2;
+                
+                ctx.translate(midX, midY);
+                ctx.rotate(sleeveAngle);
+                
+                ctx.fillStyle = '#8B4513'; // Brown color for demonstration - this would be replaced with actual sleeve texture
+                ctx.fillRect(-sleeveWidth/2, -shoulderElbowDist/2, sleeveWidth, shoulderElbowDist);
+                
+                ctx.setTransform(1, 0, 0, 1, 0, 0); // Reset transform
+            }
+            
+            ctx.restore();
+        }
+        
+        function drawClothImage(img, x, y, width, height, shoulderAngle = 0) {
             if (!img || !img.complete) {
                 console.error('Image not loaded or invalid');
                 return;
@@ -925,8 +1066,25 @@
             ctx.imageSmoothingQuality = 'high';
             
             try {
-                // Draw the clothing without white background
-                ctx.drawImage(tempCanvas, 0, 0, img.width, img.height, x, y, width, height);
+                // If there's a shoulder angle, apply rotation for better alignment
+                if (Math.abs(shoulderAngle) > 0.1) { // Only rotate if angle is significant
+                    // Move to the center of the clothing area
+                    const centerX = x + width / 2;
+                    const centerY = y + height / 2;
+                    
+                    ctx.translate(centerX, centerY);
+                    ctx.rotate(shoulderAngle);
+                    
+                    // Draw the clothing with rotation
+                    ctx.drawImage(tempCanvas, 0, 0, img.width, img.height, -width/2, -height/2, width, height);
+                    
+                    // Restore the context to original state
+                    ctx.setTransform(1, 0, 0, 1, 0, 0);
+                } else {
+                    // Draw the clothing without white background (normal case)
+                    ctx.drawImage(tempCanvas, 0, 0, img.width, img.height, x, y, width, height);
+                }
+                
                 console.log('✓ Image drawn successfully (white background removed)');
             } catch (error) {
                 console.error('Error drawing image:', error);
@@ -1183,21 +1341,21 @@
         function applyShirtPreset() {
             // Optimal settings for men's shirt alignment - UPDATED FOR HIGHER POSITION
             settings.opacity = 0.7;         // Good visibility
-            settings.scale = 0.95;           // Slightly smaller (algorithm already extends)
+            // Preserve the current size scale factor
+            const savedSize = settings.currentSize;
             settings.verticalOffset = -30;   // Move UP significantly for shoulder alignment
             settings.horizontalOffset = 0;   // Centered
             
             document.getElementById('opacitySlider').value = 70;
             document.getElementById('opacityValue').textContent = '70%';
-            document.getElementById('scaleSlider').value = 95;
-            document.getElementById('scaleValue').textContent = '95%';
+            // Don't override the scale as it's controlled by size selection
             document.getElementById('verticalSlider').value = -30;
             document.getElementById('verticalValue').textContent = '-30';
             document.getElementById('horizontalSlider').value = 0;
             document.getElementById('horizontalValue').textContent = '0';
             
             // Show feedback
-            updateStatus('Shirt preset applied - positioned at shoulder level!', true);
+            updateStatus(`Shirt preset applied - positioned at shoulder level! (Size: ${savedSize})`, true);
             setTimeout(() => {
                 if (selectedCloth) {
                     updateStatus(`Trying: ${selectedCloth}`, true);
@@ -1210,21 +1368,21 @@
         function applyEnhancedAlignment() {
             // Enhanced alignment settings
             settings.opacity = 0.8;         // Good visibility
-            settings.scale = 1.0;           // Normal size
+            // Preserve the current size scale factor
+            const savedSize = settings.currentSize;
             settings.verticalOffset = -20;   // Move UP slightly for shoulder alignment
             settings.horizontalOffset = 0;   // Centered
             
             document.getElementById('opacitySlider').value = 80;
             document.getElementById('opacityValue').textContent = '80%';
-            document.getElementById('scaleSlider').value = 100;
-            document.getElementById('scaleValue').textContent = '100%';
+            // Don't override the scale as it's controlled by size selection
             document.getElementById('verticalSlider').value = -20;
             document.getElementById('verticalValue').textContent = '-20';
             document.getElementById('horizontalSlider').value = 0;
             document.getElementById('horizontalValue').textContent = '0';
             
             // Show feedback
-            updateStatus('Enhanced alignment applied - fine-tune as needed!', true);
+            updateStatus(`Enhanced alignment applied - fine-tune as needed! (Size: ${savedSize})`, true);
             setTimeout(() => {
                 if (selectedCloth) {
                     updateStatus(`Trying: ${selectedCloth}`, true);
@@ -1234,53 +1392,49 @@
             }, 3000);
         }
         
-        // Quick adjustment functions
-        function moveClothingUp() {
-            const currentValue = parseInt(document.getElementById('verticalSlider').value);
-            const newValue = currentValue - 10; // Move up by 10 pixels
-            document.getElementById('verticalSlider').value = Math.max(-50, newValue);
-            updateVertical(document.getElementById('verticalSlider').value);
-            updateStatus('⬆️ Moved clothing up', true);
-        }
-        
-        function moveClothingDown() {
-            const currentValue = parseInt(document.getElementById('verticalSlider').value);
-            const newValue = currentValue + 10; // Move down by 10 pixels
-            document.getElementById('verticalSlider').value = Math.min(50, newValue);
-            updateVertical(document.getElementById('verticalSlider').value);
-            updateStatus('⬇️ Moved clothing down', true);
-        }
-        
-        function moveClothingLeft() {
-            const currentValue = parseInt(document.getElementById('horizontalSlider').value);
-            const newValue = currentValue - 10; // Move left by 10 pixels
-            document.getElementById('horizontalSlider').value = Math.max(-50, newValue);
-            updateHorizontal(document.getElementById('horizontalSlider').value);
-            updateStatus('⬅️ Moved clothing left', true);
-        }
-        
-        function moveClothingRight() {
-            const currentValue = parseInt(document.getElementById('horizontalSlider').value);
-            const newValue = currentValue + 10; // Move right by 10 pixels
-            document.getElementById('horizontalSlider').value = Math.min(50, newValue);
-            updateHorizontal(document.getElementById('horizontalSlider').value);
-            updateStatus('➡️ Moved clothing right', true);
-        }
-        
-        function makeClothingLarger() {
-            const currentValue = parseInt(document.getElementById('scaleSlider').value);
-            const newValue = currentValue + 5; // Increase by 5%
-            document.getElementById('scaleSlider').value = Math.min(150, newValue);
-            updateScale(document.getElementById('scaleSlider').value);
-            updateStatus('🔼 Made clothing larger', true);
-        }
-        
-        function makeClothingSmaller() {
-            const currentValue = parseInt(document.getElementById('scaleSlider').value);
-            const newValue = currentValue - 5; // Decrease by 5%
-            document.getElementById('scaleSlider').value = Math.max(80, newValue);
-            updateScale(document.getElementById('scaleSlider').value);
-            updateStatus('🔽 Made clothing smaller', true);
+        // Cloth size selection
+        function selectSize(size) {
+            // Define size multipliers
+            const sizeMultipliers = {
+                'XS': 0.85,
+                'S': 0.90,
+                'M': 1.00,  // Base size
+                'L': 1.10,
+                'XL': 1.20,
+                'XXL': 1.30
+            };
+            
+            // Set the scale based on selected size
+            const multiplier = sizeMultipliers[size];
+            if (multiplier !== undefined) {
+                settings.scale = multiplier;
+                settings.currentSize = size; // Store current size
+                
+                // Update the scale slider to reflect the selected size
+                const scaleValue = Math.round(multiplier * 100);
+                document.getElementById('scaleSlider').value = scaleValue;
+                document.getElementById('scaleValue').textContent = scaleValue + '%';
+                
+                // Update status with selected size
+                updateStatus(`📏 Size selected: ${size}`, true);
+                
+                // Highlight the selected size button temporarily
+                const sizeButtons = document.querySelectorAll('[onclick^="selectSize"]');
+                sizeButtons.forEach(btn => {
+                    if (btn.textContent.trim() === size) {
+                        btn.style.background = '#10b981'; // Green for selected
+                        setTimeout(() => {
+                            if (size === 'XS' || size === 'S') {
+                                btn.style.background = '#6366f1';
+                            } else if (size === 'M' || size === 'L') {
+                                btn.style.background = '#3b82f6';
+                            } else {
+                                btn.style.background = '#8b5cf6';
+                            }
+                        }, 1000);
+                    }
+                });
+            }
         }
 
         function updateStatus(text, active) {
