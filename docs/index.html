@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI-Powered Virtual Try-On System</title>
+  <meta name="description" content="VITON-HD based AI Virtual Try-On System — instantly visualize clothing on real people using deep learning." />
+  <meta property="og:title" content="AI-Powered Virtual Try-On System" />
+  <meta property="og:description" content="Try clothes virtually using AI — VITON-HD deep learning model with AR live try-on, skin tone filtering, and smart recommendations." />
+  <meta property="og:type" content="website" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --purple:   #6366f1;
+      --purple2:  #7c5cef;
+      --purple3:  #9d4eed;
+      --teal:     #14b8a6;
+      --green:    #10b981;
+      --amber:    #f59e0b;
+      --red:      #ef4444;
+      --bg:       #f5f7fa;
+      --card:     #ffffff;
+      --text:     #1e293b;
+      --muted:    #64748b;
+      --border:   #e2e8f0;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 40px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-brand {
+      display: flex; align-items: center; gap: 10px;
+      font-weight: 700; font-size: 18px; color: var(--purple);
+      text-decoration: none;
+    }
+    .nav-links { display: flex; gap: 24px; }
+    .nav-links a {
+      color: var(--muted); text-decoration: none; font-size: 14px; font-weight: 500;
+      transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--purple); }
+    .nav-cta {
+      background: linear-gradient(135deg, var(--purple), var(--purple2));
+      color: #fff !important; padding: 8px 18px; border-radius: 8px;
+      font-weight: 600 !important; font-size: 14px;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .nav-cta:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(99,102,241,.35); }
+
+    /* ── HERO ── */
+    .hero {
+      background: linear-gradient(135deg, #5b6cf2 0%, #7c5cef 50%, #9d4eed 100%);
+      color: #fff;
+      padding: 90px 40px 80px;
+      text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(255,255,255,.2); border: 1px solid rgba(255,255,255,.3);
+      backdrop-filter: blur(8px);
+      padding: 6px 16px; border-radius: 20px;
+      font-size: 13px; font-weight: 600; letter-spacing: .4px;
+      margin-bottom: 28px;
+    }
+    .hero h1 {
+      font-size: clamp(32px, 5vw, 58px);
+      font-weight: 800; line-height: 1.15;
+      margin-bottom: 20px;
+    }
+    .hero h1 span { opacity: .85; }
+    .hero p {
+      font-size: clamp(16px, 2vw, 20px);
+      opacity: .9; max-width: 680px; margin: 0 auto 40px;
+    }
+    .hero-buttons {
+      display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;
+    }
+    .btn-hero {
+      padding: 15px 32px; border-radius: 10px; font-size: 16px; font-weight: 700;
+      cursor: pointer; border: none; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 8px;
+      transition: transform .25s, box-shadow .25s;
+    }
+    .btn-hero:hover { transform: translateY(-3px); }
+    .btn-white {
+      background: #fff; color: var(--purple);
+      box-shadow: 0 6px 20px rgba(0,0,0,.15);
+    }
+    .btn-white:hover { box-shadow: 0 10px 30px rgba(0,0,0,.2); }
+    .btn-outline {
+      background: rgba(255,255,255,.12); color: #fff;
+      border: 2px solid rgba(255,255,255,.45);
+    }
+    .btn-outline:hover { background: rgba(255,255,255,.22); }
+
+    /* ── STATS ── */
+    .stats {
+      background: #fff;
+      padding: 36px 40px;
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .stat {
+      text-align: center; padding: 16px;
+    }
+    .stat-value {
+      font-size: 34px; font-weight: 800; color: var(--purple);
+      line-height: 1;
+    }
+    .stat-label { font-size: 13px; color: var(--muted); margin-top: 6px; font-weight: 500; }
+
+    /* ── SECTION ── */
+    section { padding: 80px 40px; max-width: 1200px; margin: 0 auto; }
+    .section-tag {
+      display: inline-block;
+      background: rgba(99,102,241,.1); color: var(--purple);
+      padding: 4px 14px; border-radius: 20px;
+      font-size: 12px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+    h2.section-title {
+      font-size: clamp(26px, 3vw, 38px); font-weight: 800;
+      margin-bottom: 14px; color: var(--text);
+    }
+    p.section-sub {
+      font-size: 17px; color: var(--muted); max-width: 600px;
+      margin-bottom: 50px;
+    }
+
+    /* ── DEMO SCREEN MOCKUP ── */
+    .demo-screen {
+      background: var(--card);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,.12);
+      border: 1px solid var(--border);
+    }
+    .screen-bar {
+      background: linear-gradient(135deg, #5b6cf2, #7c5cef, #9d4eed);
+      padding: 20px 30px;
+      display: flex; align-items: center; gap: 14px;
+    }
+    .screen-dots { display: flex; gap: 6px; }
+    .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .dot-r { background: #ff5f57; }
+    .dot-y { background: #febc2e; }
+    .dot-g { background: #28c840; }
+    .screen-title { color: #fff; font-weight: 700; font-size: 15px; margin-left: auto; margin-right: auto; }
+    .screen-badge {
+      background: rgba(255,255,255,.2); color: #fff;
+      padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 700;
+    }
+    .screen-body {
+      padding: 30px;
+      display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px;
+    }
+    .screen-card {
+      background: var(--bg); border-radius: 12px; overflow: hidden;
+      border: 2px solid var(--border);
+    }
+    .screen-card-header {
+      background: #fff; padding: 10px 14px;
+      font-size: 13px; font-weight: 700; color: var(--text);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 6px;
+    }
+    .screen-card-body {
+      padding: 12px;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+    }
+    .img-thumb {
+      border-radius: 8px; overflow: hidden;
+      background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+      aspect-ratio: 3/4;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px; border: 2px solid transparent;
+      transition: border-color .2s;
+      cursor: pointer;
+    }
+    .img-thumb.selected { border-color: var(--purple); }
+    .img-thumb.cloth-bg { background: linear-gradient(135deg, #fce7f3, #fbcfe8); }
+    .result-area {
+      border-radius: 12px; overflow: hidden;
+      border: 2px solid var(--border);
+      background: linear-gradient(160deg, #ede9fe, #ddd6fe);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 12px; padding: 20px; min-height: 220px;
+      position: relative;
+    }
+    .result-emoji { font-size: 56px; }
+    .result-label {
+      font-size: 14px; font-weight: 700; color: var(--purple); text-align: center;
+    }
+    .result-sub { font-size: 12px; color: var(--muted); text-align: center; }
+    .pulse {
+      width: 10px; height: 10px; border-radius: 50%; background: var(--green);
+      animation: pulse 1.5s infinite;
+      position: absolute; top: 14px; right: 14px;
+    }
+    @keyframes pulse {
+      0%,100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.5); opacity: .6; }
+    }
+    .tag-pill {
+      position: absolute; top: 14px; left: 14px;
+      background: var(--purple); color: #fff;
+      padding: 4px 10px; border-radius: 10px; font-size: 10px; font-weight: 700;
+    }
+
+    /* ── FEATURES GRID ── */
+    .features-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+    }
+    .feature-card {
+      background: var(--card); border-radius: 16px;
+      padding: 28px; border: 2px solid var(--border);
+      box-shadow: 0 2px 10px rgba(0,0,0,.05);
+      transition: transform .25s, box-shadow .25s, border-color .25s;
+    }
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 30px rgba(99,102,241,.12);
+      border-color: var(--purple);
+    }
+    .feature-icon {
+      width: 52px; height: 52px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px; margin-bottom: 16px;
+    }
+    .icon-purple { background: rgba(99,102,241,.12); }
+    .icon-teal   { background: rgba(20,184,166,.12); }
+    .icon-amber  { background: rgba(245,158,11,.12); }
+    .icon-green  { background: rgba(16,185,129,.12); }
+    .icon-red    { background: rgba(239,68,68,.12); }
+    .icon-blue   { background: rgba(59,130,246,.12); }
+    .feature-card h3 { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+    .feature-card p  { font-size: 14px; color: var(--muted); line-height: 1.6; }
+    .feature-badge {
+      display: inline-block; margin-top: 12px;
+      background: rgba(99,102,241,.1); color: var(--purple);
+      padding: 3px 10px; border-radius: 10px; font-size: 11px; font-weight: 700;
+    }
+    .feature-badge.new { background: rgba(16,185,129,.1); color: var(--green); }
+    .feature-badge.live { background: rgba(239,68,68,.1); color: var(--red); }
+
+    /* ── HOW IT WORKS ── */
+    .steps { display: flex; gap: 0; flex-wrap: wrap; }
+    .step {
+      flex: 1; min-width: 200px; padding: 30px 24px;
+      background: var(--card); border: 2px solid var(--border);
+      position: relative; text-align: center;
+      border-radius: 0;
+    }
+    .step:first-child { border-radius: 16px 0 0 16px; }
+    .step:last-child  { border-radius: 0 16px 16px 0; }
+    .step + .step { border-left: none; }
+    .step-num {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--purple), var(--purple2));
+      color: #fff; font-weight: 800; font-size: 18px;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 14px;
+      box-shadow: 0 4px 12px rgba(99,102,241,.35);
+    }
+    .step-emoji { font-size: 30px; margin-bottom: 10px; }
+    .step h3 { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+    .step p  { font-size: 13px; color: var(--muted); }
+    .arrow {
+      position: absolute; right: -22px; top: 50%;
+      transform: translateY(-50%);
+      font-size: 22px; color: var(--purple); z-index: 2;
+    }
+
+    /* ── TECH STACK ── */
+    .tech-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 16px;
+    }
+    .tech-card {
+      background: var(--card); border: 2px solid var(--border);
+      border-radius: 12px; padding: 20px 16px; text-align: center;
+      transition: border-color .2s, transform .2s;
+    }
+    .tech-card:hover { border-color: var(--purple); transform: translateY(-2px); }
+    .tech-card .emoji { font-size: 28px; margin-bottom: 8px; }
+    .tech-card .name { font-size: 14px; font-weight: 700; }
+    .tech-card .desc { font-size: 11px; color: var(--muted); margin-top: 3px; }
+
+    /* ── PAGES SHOWCASE ── */
+    .pages-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+    }
+    .page-card {
+      background: var(--card); border-radius: 16px; overflow: hidden;
+      border: 2px solid var(--border);
+      box-shadow: 0 4px 16px rgba(0,0,0,.06);
+      transition: transform .25s, box-shadow .25s;
+    }
+    .page-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,.12); }
+    .page-preview {
+      height: 190px;
+      display: flex; align-items: center; justify-content: center; flex-direction: column;
+      gap: 10px; font-size: 48px;
+    }
+    .preview-purple { background: linear-gradient(135deg, #ede9fe, #c4b5fd); }
+    .preview-teal   { background: linear-gradient(135deg, #ccfbf1, #99f6e4); }
+    .preview-amber  { background: linear-gradient(135deg, #fef3c7, #fde68a); }
+    .page-label {
+      font-size: 12px; font-weight: 700; color: var(--muted);
+      background: rgba(255,255,255,.7); padding: 4px 12px; border-radius: 10px;
+    }
+    .page-info { padding: 18px 20px; }
+    .page-info h3 { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+    .page-info p  { font-size: 13px; color: var(--muted); }
+    .page-tags { display: flex; gap: 6px; margin-top: 12px; flex-wrap: wrap; }
+    .tag {
+      background: rgba(99,102,241,.08); color: var(--purple);
+      padding: 3px 10px; border-radius: 8px; font-size: 11px; font-weight: 600;
+    }
+
+    /* ── CTA BANNER ── */
+    .cta-section {
+      background: linear-gradient(135deg, #5b6cf2 0%, #7c5cef 50%, #9d4eed 100%);
+      border-radius: 24px; padding: 60px 40px;
+      text-align: center; color: #fff;
+      margin: 0 40px 80px;
+      position: relative; overflow: hidden;
+    }
+    .cta-section::after {
+      content: '🎽';
+      position: absolute; right: 5%; top: 50%;
+      transform: translateY(-50%);
+      font-size: 100px; opacity: .1;
+    }
+    .cta-section h2 { font-size: clamp(26px, 4vw, 40px); font-weight: 800; margin-bottom: 14px; }
+    .cta-section p  { font-size: 17px; opacity: .9; margin-bottom: 36px; max-width: 550px; margin-left: auto; margin-right: auto; }
+    .cta-buttons { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+    .btn-cta {
+      padding: 15px 32px; border-radius: 10px; font-size: 16px; font-weight: 700;
+      cursor: pointer; border: none; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 8px;
+      transition: transform .25s, box-shadow .25s;
+    }
+    .btn-cta:hover { transform: translateY(-3px); }
+    .btn-cta-white {
+      background: #fff; color: var(--purple);
+      box-shadow: 0 6px 20px rgba(0,0,0,.15);
+    }
+    .btn-cta-outline {
+      background: rgba(255,255,255,.12); color: #fff;
+      border: 2px solid rgba(255,255,255,.45);
+    }
+    .platform-note {
+      margin-top: 20px; font-size: 13px; opacity: .7;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--text); color: rgba(255,255,255,.7);
+      padding: 50px 40px 30px;
+    }
+    .footer-grid {
+      max-width: 1200px; margin: 0 auto;
+      display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px;
+      margin-bottom: 40px;
+    }
+    .footer-brand { font-size: 20px; font-weight: 800; color: #fff; margin-bottom: 10px; }
+    .footer-desc { font-size: 14px; line-height: 1.7; }
+    footer h4 { color: #fff; font-size: 14px; font-weight: 700; margin-bottom: 14px; }
+    footer a  { color: rgba(255,255,255,.6); text-decoration: none; font-size: 14px; display: block; margin-bottom: 8px; transition: color .2s; }
+    footer a:hover { color: #fff; }
+    .footer-bottom {
+      max-width: 1200px; margin: 0 auto;
+      border-top: 1px solid rgba(255,255,255,.1);
+      padding-top: 24px; font-size: 13px;
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: gap;
+    }
+    .footer-tech-pills { display: flex; gap: 8px; flex-wrap: wrap; }
+    .fpill {
+      background: rgba(255,255,255,.08); color: rgba(255,255,255,.7);
+      padding: 4px 12px; border-radius: 10px; font-size: 11px; font-weight: 600;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .features-grid { grid-template-columns: repeat(2, 1fr); }
+      .screen-body { grid-template-columns: 1fr 1fr; }
+      .pages-grid { grid-template-columns: repeat(2, 1fr); }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 600px) {
+      nav { padding: 12px 20px; }
+      .nav-links { display: none; }
+      .hero { padding: 60px 20px 50px; }
+      section { padding: 50px 20px; }
+      .stats { grid-template-columns: repeat(2, 1fr); padding: 24px 20px; }
+      .features-grid { grid-template-columns: 1fr; }
+      .screen-body { grid-template-columns: 1fr; }
+      .pages-grid { grid-template-columns: 1fr; }
+      .steps { flex-direction: column; }
+      .step:first-child { border-radius: 16px 16px 0 0; }
+      .step:last-child  { border-radius: 0 0 16px 16px; }
+      .step + .step { border-left: 2px solid var(--border); border-top: none; }
+      .arrow { display: none; }
+      .cta-section { margin: 0 20px 50px; padding: 40px 24px; }
+      .footer-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-brand" href="#">🎨 VirtualTryOn AI</a>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#demo">Demo</a>
+    <a href="#how-it-works">How It Works</a>
+    <a href="#tech">Tech Stack</a>
+    <a href="#try-live" class="nav-cta">🚀 Try Live</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">✨ AI-Powered &nbsp;·&nbsp; VITON-HD &nbsp;·&nbsp; Deep Learning</div>
+  <h1>Virtual Try-On<br/><span>Powered by AI</span></h1>
+  <p>Instantly visualize any clothing on real people using state-of-the-art VITON-HD deep learning — with AR live preview, AI recommendations, and skin tone filtering.</p>
+  <div class="hero-buttons">
+    <a href="#try-live" class="btn-hero btn-white">🚀 Try the Live App</a>
+    <a href="#demo" class="btn-hero btn-outline">🎬 See Demo</a>
+    <a href="https://github.com/vishalnoah/AI-Powered-Virtual-Try-On-System" target="_blank" class="btn-hero btn-outline">⭐ GitHub</a>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat">
+    <div class="stat-value">VITON-HD</div>
+    <div class="stat-label">Deep Learning Model</div>
+  </div>
+  <div class="stat">
+    <div class="stat-value">6+</div>
+    <div class="stat-label">Skin Tone Filters</div>
+  </div>
+  <div class="stat">
+    <div class="stat-value">AR Live</div>
+    <div class="stat-label">Real-Time Camera Try-On</div>
+  </div>
+  <div class="stat">
+    <div class="stat-value">100%</div>
+    <div class="stat-label">Try-On Success Rate</div>
+  </div>
+</div>
+
+<!-- DEMO MOCKUP -->
+<section id="demo">
+  <div class="section-tag">Interactive Demo</div>
+  <h2 class="section-title">See It In Action</h2>
+  <p class="section-sub">A full-featured web interface with person gallery, clothing gallery, AI recommendations, AR live try-on, and more.</p>
+
+  <div class="demo-screen">
+    <div class="screen-bar">
+      <div class="screen-dots">
+        <div class="dot dot-r"></div>
+        <div class="dot dot-y"></div>
+        <div class="dot dot-g"></div>
+      </div>
+      <div class="screen-title">🎨 VITON-HD Virtual Try-On &nbsp;·&nbsp; AI Powered</div>
+      <div class="screen-badge">✨ AI</div>
+    </div>
+
+    <div class="screen-body">
+      <!-- Person gallery -->
+      <div class="screen-card">
+        <div class="screen-card-header">👤 Select Person</div>
+        <div class="screen-card-body">
+          <div class="img-thumb selected">👩</div>
+          <div class="img-thumb">🧑</div>
+          <div class="img-thumb">👩‍🦱</div>
+          <div class="img-thumb">👨</div>
+        </div>
+      </div>
+
+      <!-- Cloth gallery -->
+      <div class="screen-card">
+        <div class="screen-card-header">👕 Select Clothing</div>
+        <div class="screen-card-body">
+          <div class="img-thumb cloth-bg selected">👕</div>
+          <div class="img-thumb cloth-bg">🧥</div>
+          <div class="img-thumb cloth-bg">👗</div>
+          <div class="img-thumb cloth-bg">🥻</div>
+        </div>
+      </div>
+
+      <!-- Result -->
+      <div class="result-area">
+        <div class="tag-pill">✅ Generated</div>
+        <div class="pulse"></div>
+        <div class="result-emoji">🪄</div>
+        <div class="result-label">Virtual Try-On Result</div>
+        <div class="result-sub">VITON-HD model applied clothing<br/>seamlessly onto the person</div>
+      </div>
+    </div>
+
+    <!-- Tab bar mock -->
+    <div style="display:flex; gap:10px; padding: 14px 30px 20px; background:#fff; border-top:1px solid var(--border); flex-wrap:wrap;">
+      <span style="padding:8px 16px; background:var(--purple); color:#fff; border-radius:8px; font-size:13px; font-weight:700;">👕 Manual Select</span>
+      <span style="padding:8px 16px; border:2px solid var(--border); border-radius:8px; font-size:13px; font-weight:600; color:var(--muted);">🤖 AI Auto-Pair</span>
+      <span style="padding:8px 16px; border:2px solid var(--border); border-radius:8px; font-size:13px; font-weight:600; color:var(--muted);">📜 History</span>
+      <span style="padding:8px 16px; border:2px solid var(--border); border-radius:8px; font-size:13px; font-weight:600; color:var(--muted);">📹 AR Live <span style="background:#ef4444;color:#fff;padding:2px 6px;border-radius:8px;font-size:10px;margin-left:4px;">LIVE</span></span>
+      <span style="padding:8px 16px; border:2px solid var(--border); border-radius:8px; font-size:13px; font-weight:600; color:var(--teal);">➕ Add Clothing <span style="background:rgba(20,184,166,.15);color:var(--teal);padding:2px 6px;border-radius:8px;font-size:10px;margin-left:4px;">NEW</span></span>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features" style="background: var(--card); max-width: 100%; padding: 80px 40px;">
+  <div style="max-width: 1200px; margin: 0 auto;">
+    <div class="section-tag">Features</div>
+    <h2 class="section-title">Everything You Need</h2>
+    <p class="section-sub">Built with cutting-edge AI and a polished interface for a seamless virtual fashion experience.</p>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon icon-purple">🤖</div>
+        <h3>VITON-HD Inference</h3>
+        <p>State-of-the-art virtual try-on using the VITON-HD model — realistic clothing generation with proper body alignment and texture preservation.</p>
+        <span class="feature-badge">AI Model</span>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon icon-red">📹</div>
+        <h3>AR Live Try-On</h3>
+        <p>Real-time camera-based AR overlay — select a garment and see it appear on your live camera feed instantly with automatic body detection.</p>
+        <span class="feature-badge live">LIVE</span>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon icon-teal">✨</div>
+        <h3>AI Recommendations</h3>
+        <p>Color-feature-based AI engine recommends the best-matching clothing for each person using cosine similarity on extracted image features.</p>
+        <span class="feature-badge">Smart</span>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon icon-amber">🎨</div>
+        <h3>Skin Tone Filtering</h3>
+        <p>Auto-classify and filter person images by 6 skin tone categories — light, intermediate, tan, brown, dark — for personalized browsing.</p>
+        <span class="feature-badge">6 Categories</span>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon icon-green">🛍️</div>
+        <h3>Shopping Integration</h3>
+        <p>Search Myntra & AJIO catalogues, compare prices, browse trending fashion items, and get purchase links — all from within the app.</p>
+        <span class="feature-badge new">NEW</span>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon icon-blue">💬</div>
+        <h3>AI Chatbot Assistant</h3>
+        <p>Built-in conversational chatbot to guide users through the try-on process, answer questions, and help discover outfit combinations.</p>
+        <span class="feature-badge">Chatbot</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how-it-works">
+  <div class="section-tag">How It Works</div>
+  <h2 class="section-title">Four Simple Steps</h2>
+  <p class="section-sub">From image selection to photorealistic try-on result in under 30 seconds.</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-emoji">👤</div>
+      <h3>Choose Person</h3>
+      <p>Pick a person image from the gallery or use the AI auto-pair feature.</p>
+      <span class="arrow">→</span>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-emoji">👕</div>
+      <h3>Select Clothing</h3>
+      <p>Browse the clothing gallery or let AI recommend outfits based on color matching.</p>
+      <span class="arrow">→</span>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-emoji">⚙️</div>
+      <h3>AI Processing</h3>
+      <p>VITON-HD model processes the pair — warping the garment to fit the body pose and shape.</p>
+      <span class="arrow">→</span>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-emoji">🪄</div>
+      <h3>View Result</h3>
+      <p>Get a photorealistic try-on result. Save it, share it, or compare multiple outfits.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PAGES SHOWCASE -->
+<section style="background: var(--card); max-width:100%; padding: 80px 40px;">
+  <div style="max-width: 1200px; margin: 0 auto;">
+    <div class="section-tag">App Pages</div>
+    <h2 class="section-title">What's Inside</h2>
+    <p class="section-sub">Multiple views for every kind of try-on experience.</p>
+
+    <div class="pages-grid">
+      <div class="page-card">
+        <div class="page-preview preview-purple">
+          <span>👗</span>
+          <span class="page-label">Main Interface</span>
+        </div>
+        <div class="page-info">
+          <h3>Manual Try-On</h3>
+          <p>Browse person and clothing galleries side by side. Select your pair and generate with one click.</p>
+          <div class="page-tags">
+            <span class="tag">Gallery</span><span class="tag">AI Recs</span><span class="tag">History</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="page-card">
+        <div class="page-preview preview-teal">
+          <span>📹</span>
+          <span class="page-label">AR Camera</span>
+        </div>
+        <div class="page-info">
+          <h3>AR Live Try-On</h3>
+          <p>Real-time camera overlay — try on clothes live using your webcam with instant pose detection.</p>
+          <div class="page-tags">
+            <span class="tag">Camera</span><span class="tag">Real-Time</span><span class="tag">AR</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="page-card">
+        <div class="page-preview preview-amber">
+          <span>⚡</span>
+          <span class="page-label">Instant Mode</span>
+        </div>
+        <div class="page-info">
+          <h3>Instant Try-On</h3>
+          <p>Snapchat-style instant mode — fast previews without full model inference for quick browsing.</p>
+          <div class="page-tags">
+            <span class="tag">Fast</span><span class="tag">Snapchat-Style</span><span class="tag">Quick</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TECH STACK -->
+<section id="tech">
+  <div class="section-tag">Tech Stack</div>
+  <h2 class="section-title">Built With</h2>
+  <p class="section-sub">A powerful combination of deep learning, computer vision, and web technologies.</p>
+
+  <div class="tech-grid">
+    <div class="tech-card">
+      <div class="emoji">🐍</div>
+      <div class="name">Python</div>
+      <div class="desc">Core language</div>
+    </div>
+    <div class="tech-card">
+      <div class="emoji">🌶️</div>
+      <div class="name">Flask</div>
+      <div class="desc">Web framework</div>
+    </div>
+    <div class="tech-card">
+      <div class="emoji">🔥</div>
+      <div class="name">PyTorch</div>
+      <div class="desc">Deep learning</div>
+    </div>
+    <div class="tech-card">
+      <div class="emoji">👁️</div>
+      <div class="name">OpenCV</div>
+      <div class="desc">Computer vision</div>
+    </div>
+    <div class="tech-card">
+      <div class="emoji">🧮</div>
+      <div class="name">NumPy</div>
+      <div class="desc">Numerical ops</div>
+    </div>
+    <div class="tech-card">
+      <div class="emoji">🤖</div>
+      <div class="name">scikit-learn</div>
+      <div class="desc">ML / AI recs</div>
+    </div>
+    <div class="tech-card">
+      <div class="emoji">🖼️</div>
+      <div class="name">Pillow</div>
+      <div class="desc">Image processing</div>
+    </div>
+    <div class="tech-card">
+      <div class="emoji">🎨</div>
+      <div class="name">VITON-HD</div>
+      <div class="desc">Try-on model</div>
+    </div>
+    <div class="tech-card">
+      <div class="emoji">📡</div>
+      <div class="name">OpenPose</div>
+      <div class="desc">Pose estimation</div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="cta-section" id="try-live">
+  <h2>Ready to Try It Live?</h2>
+  <p>The full app runs on a Python/Flask server with the VITON-HD model. Deploy it on Render or Hugging Face Spaces to get a public URL.</p>
+  <div class="cta-buttons">
+    <a href="https://render.com" target="_blank" class="btn-cta btn-cta-white">🚀 Deploy on Render (Free)</a>
+    <a href="https://huggingface.co/spaces" target="_blank" class="btn-cta btn-cta-outline">🤗 Hugging Face Spaces</a>
+    <a href="https://github.com/vishalnoah/AI-Powered-Virtual-Try-On-System" target="_blank" class="btn-cta btn-cta-outline">⭐ View on GitHub</a>
+  </div>
+  <p class="platform-note">💡 This demo page is static. The live app requires a Python server with GPU/CPU support.</p>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand">🎨 VirtualTryOn AI</div>
+      <p class="footer-desc">An AI-powered virtual try-on system using the VITON-HD deep learning model, AR live camera overlay, and intelligent outfit recommendations.</p>
+    </div>
+    <div>
+      <h4>Project</h4>
+      <a href="https://github.com/vishalnoah/AI-Powered-Virtual-Try-On-System" target="_blank">GitHub Repo</a>
+      <a href="#features">Features</a>
+      <a href="#how-it-works">How It Works</a>
+      <a href="#tech">Tech Stack</a>
+    </div>
+    <div>
+      <h4>Deploy</h4>
+      <a href="https://render.com" target="_blank">Render.com</a>
+      <a href="https://huggingface.co/spaces" target="_blank">HF Spaces</a>
+      <a href="https://railway.app" target="_blank">Railway</a>
+      <a href="https://pythonanywhere.com" target="_blank">PythonAnywhere</a>
+    </div>
+    <div>
+      <h4>Resources</h4>
+      <a href="https://github.com/shadow2496/VITON-HD" target="_blank">VITON-HD Paper</a>
+      <a href="https://opencv.org" target="_blank">OpenCV</a>
+      <a href="https://pytorch.org" target="_blank">PyTorch</a>
+      <a href="https://flask.palletsprojects.com" target="_blank">Flask Docs</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2024 AI-Powered Virtual Try-On System. Built with ❤️ using VITON-HD.</span>
+    <div class="footer-tech-pills">
+      <span class="fpill">Python</span>
+      <span class="fpill">Flask</span>
+      <span class="fpill">PyTorch</span>
+      <span class="fpill">OpenCV</span>
+      <span class="fpill">VITON-HD</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Smooth scroll for anchor links
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+    });
+  });
+
+  // Animate stats on scroll
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.style.opacity = 1; });
+  }, { threshold: 0.2 });
+  document.querySelectorAll('.feature-card, .tech-card, .page-card, .step').forEach(el => {
+    el.style.opacity = 0;
+    el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+    observer.observe(el);
+  });
+</script>
+</body>
+</html>
